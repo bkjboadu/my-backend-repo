@@ -50,3 +50,57 @@ class LoginSerializer(serializers.Serializer):
 
         data['user'] = user
         return data
+    
+
+#Password management
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, data):
+        user = CustomUser.objects.filter(email=data).first()
+        if not user:
+            raise serializers.ValidationError("No account is associated with this email.")
+        return data
+
+class PasswordResetConfirmSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ("password","confirm_password")
+    confirm_password = serializers.CharField(
+        write_only=True,
+        required=True
+    )
+
+    def validate_password(self, password):
+        validator = CustomPasswordValidator()
+        validator.validate(password)
+        return password
+    
+    def validate(self, data):
+        password = data['password']
+        """
+        Check that the two password fields match
+        """
+        if password != data['confirm_password']:
+            raise serializers.ValidationError("Passwords do not match")
+        return data
+    
+class PasswordChangeSerializer(PasswordResetConfirmSerializer):
+    current_password = serializers.CharField(
+        write_only=True,
+        required=True
+    )
+
+    class Meta(PasswordResetConfirmSerializer.Meta):
+        fields = ('current_password', 'password', 'confirm_password')
+    def password_check(self,data):
+        user = self.context['request'].user
+        current_password = data['current_password']
+        if not user.check_password(current_password):
+            raise serializers.ValidationError('you have entered the wrong password check and try again.')
+        
+    
+class DeleteAccountSerializer(PasswordResetSerializer):
+    def get_user(self,email):
+        user = CustomUser.objects.get(email=email)
+        return user
