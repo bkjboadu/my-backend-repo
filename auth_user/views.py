@@ -41,37 +41,31 @@ class UserSignupView(generics.GenericAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 
+
 class Activate(APIView):
     permission_classes = ()
-
     def post(self, request, token):
         try:
-            print(f"Received token: {token}")
             token = base64.urlsafe_b64decode(token).decode('utf-8')
             print(f"Decoded token: {token}")
-            decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'], options={"verify_exp": True})
+            decoded_token = jwt.decode(token, 'secret_key', algorithms=['HS256'])
             print(f"Decoded JWT: {decoded_token}")
+            # encoded_token = request.GET.get('token')
             
             user_id = decoded_token['user_id']
             user = CustomUser.objects.get(id=user_id)
-            print(f"User: {user}")
-
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'detail': 'Activation link has expired'}, status=400)
-        except jwt.DecodeError:
-            return JsonResponse({'detail': 'Invalid activation link'}, status=400)
-        except CustomUser.DoesNotExist:
-            raise Http404('User does not exist')
-        except Exception as e:
-            return JsonResponse({'detail': str(e)}, status=400)
-
+            print(user)
+        except (jwt.exceptions.DecodeError, CustomUser.DoesNotExist):
+            raise Http404('Invalid activation link')
+        
         if not user.is_verified:
             user.is_verified = True
             user.is_active = True
             user.save()
-            return JsonResponse({'detail': 'User has been activated'}, status=200)
+            return JsonResponse({'detail': 'User has been activated'})
         else:
-            return JsonResponse({'detail': 'User has already been activated'}, status=200)
+            return JsonResponse({'detail': 'User has already been activated'})
+
 
 class UserLoginView(generics.GenericAPIView):
     permission_classes = [AllowAny]
@@ -85,7 +79,7 @@ class UserLoginView(generics.GenericAPIView):
         login(request,user)
         # print(self.request.user)
         refresh = RefreshToken.for_user(user)
-        # print(request.user.refresh)
+        print(refresh)
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -112,11 +106,11 @@ class PasswordResetView(generics.GenericAPIView):
                  reverse('passwordresetconfirm', kwargs={'uidb64': uidb64, 'token': token}))
         subject = 'Password reset'
         message = f'Use this link to reset your password: {reset_url}'
-        from_email = 'brbojr@gmail.com' 
+        from_email = 'jmillicent135@gmail.com' 
         recipient_list = [user.email]
         send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
-        return Response({'success': 'Password reset email has been sent'}, status=status.HTTP_200_OK)
+        return Response({'success': 'Email sent  Click the link in your email to continue'}, status=status.HTTP_200_OK)
     
 class PasswordResetConfirm(generics.GenericAPIView):
     permission_classes = [AllowAny]
@@ -138,7 +132,7 @@ class PasswordResetConfirm(generics.GenericAPIView):
                 return Response({'detail':'password cannot be the same as previous password.'})
             user.set_password(password)
             user.save()
-            return Response({'detail': 'Password has been reset.'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'Password successfully reset.'}, status=status.HTTP_200_OK)
 
         return Response({'detail': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
     
