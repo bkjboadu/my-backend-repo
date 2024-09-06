@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="subcategories",
-                        to="dropshop.category",
+                        to="shop_app.category",
                     ),
                 ),
             ],
@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name="product_brands",
-                        to="dropshop.brand",
+                        to="shop_app.brand",
                     ),
                 ),
                 (
@@ -111,7 +111,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name="product_categories",
-                        to="dropshop.category",
+                        to="shop_app.category",
                     ),
                 ),
             ],
@@ -151,7 +151,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="reviews",
-                        to="dropshop.products",
+                        to="shop_app.products",
                     ),
                 ),
             ],
@@ -176,7 +176,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="images",
-                        to="dropshop.products",
+                        to="shop_app.products",
                     ),
                 ),
             ],
@@ -215,7 +215,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="pricing",
-                        to="dropshop.products",
+                        to="shop_app.products",
                     ),
                 ),
             ],
@@ -244,7 +244,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="variants",
-                        to="dropshop.products",
+                        to="shop_app.products",
                     ),
                 ),
             ],
@@ -272,7 +272,7 @@ class Migration(migrations.Migration):
                     models.OneToOneField(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="seo",
-                        to="dropshop.products",
+                        to="shop_app.products",
                     ),
                 ),
             ],
@@ -312,7 +312,7 @@ class Migration(migrations.Migration):
                     models.OneToOneField(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="shipping_info",
-                        to="dropshop.products",
+                        to="shop_app.products",
                     ),
                 ),
             ],
@@ -332,7 +332,7 @@ class Migration(migrations.Migration):
                 ("tag", models.CharField(max_length=50)),
                 (
                     "product",
-                    models.ManyToManyField(related_name="tags", to="dropshop.products"),
+                    models.ManyToManyField(related_name="tags", to="shop_app.products"),
                 ),
             ],
         ),
