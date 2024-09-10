@@ -4,17 +4,15 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from django.conf import settings
 
+class ParentCategory(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
 
 class Category(models.Model):
     name           =       models.CharField(max_length=255, unique=True)
-    description    =       models.TextField(max_length=255, null=True, blank=True)
-    parent_category =      models.ForeignKey('self', related_name='subcategories', on_delete=models.CASCADE, blank=True, null=True)
-    slug =                 models.SlugField(max_length=255)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+    parent_category =      models.ForeignKey(ParentCategory, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -37,6 +35,8 @@ class Products(models.Model):
     category =   models.ForeignKey(Category, related_name='product_categories', on_delete=models.SET_NULL, null=True)
     brand =      models.ForeignKey(Brand, related_name='product_brands', on_delete=models.SET_NULL, null=True, blank=True)
     image =      models.ImageField(upload_to='product_images/', blank=True, null=True)
+    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
