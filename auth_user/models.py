@@ -1,7 +1,9 @@
 from django.utils import timezone 
 import uuid
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUserManager, Group, Permission
+import uuid
+from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUserManager
+from django.utils import timezone
 
 
 
@@ -11,26 +13,19 @@ class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, *args, **kwargs):
         if not email:
             raise ValueError('Email Address is Required')
-            
+
         if not password:
             raise ValueError('Password is Required')
 
-   
+        email = self.normalize_email(email)
+        user = self.model(email=email,*args,**kwargs)
+        user.set_password(password)
         try:
-            user = self.model(
-                email = self.normalize_email(email),
-                
-                *args,
-                **kwargs
-            )
-        
-            user.set_password(password)
-            user.save()
-            
+            user.save(using=self._db)
             return user
-        except:
-               raise ValueError('An Error Occured Please Try Again')         
-        
+        except Exception as e:
+            raise ValueError(f'An error occurred while creating the user: {e}')
+
 
     def create_superuser(self, email, first_name, password=None, *args, **kwargs):
         kwargs.setdefault('is_staff',True)
@@ -45,24 +40,26 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser,PermissionsMixin):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    id = models.UUIDField(primary_key=True,default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=100,blank=True)
     last_name = models.CharField(max_length=100,blank=True)
     avatar = models.ImageField(upload_to='user_avatars',blank=True,null=True)
-    is_admin = models.BooleanField(default=False)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
+
     phone_number = models.CharField(max_length=15,blank=True,null=True)
+
     shipping_address = models.CharField(max_length=255, null=True, blank=True)
     billing_address = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     zipcode = models.CharField(max_length=10, null=True, blank=True)
     country = models.CharField(max_length=50, null=True, blank=True)
+
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(blank=True, null=True)
 
@@ -75,9 +72,6 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
         return self.email
 
 
-
-
-
 class BlacklistedToken(models.Model):
     token = models.CharField(max_length=255, unique=True)
     blacklisted_at = models.DateTimeField(auto_now_add=True)
@@ -87,6 +81,3 @@ class BlacklistedToken(models.Model):
 
     class Meta:
         db_table = 'blacklisted_tokens'
- 
-
-
