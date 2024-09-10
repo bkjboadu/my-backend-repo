@@ -1,15 +1,27 @@
 from rest_framework import serializers
-from .models import (Brand, Category, ProductImage, ProductReview, Products, Pricing, Tags)
+from .models import (Brand, Category, ParentCategory, ProductImage, ProductReview, Products, Pricing, Tags)
 
-class CategorySerializer(serializers.ModelSerializer):
+
+class ParentCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParentCategory
+        fields = ['id', 'name',]
+class SubcategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('name', 'description','parent_category')
+        fields = ['id', 'name', 'slug'] 
+class CategorySerializer(serializers.ModelSerializer):
+    subcategories = SubcategorySerializer(many=True, read_only=True)  
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'subcategories', 'parent_category']  
 
+
+    
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = ('name', 'description')
+        fields = ['name']
 
 class ProductSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=100, required=True)
