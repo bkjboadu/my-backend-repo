@@ -28,8 +28,8 @@
 # #     }
 # #     message = render_to_string('activate_email.html', context)
 # #     plain_message = strip_tags(message)
-# #     sendgrid_api_key = os.getenv('SENDGRID_API_KEY') 
-# #     from_email = os.getenv('EMAIL_HOST_USER')  
+# #     sendgrid_api_key = os.getenv('SENDGRID_API_KEY')
+# #     from_email = os.getenv('EMAIL_HOST_USER')
 
 # #     email = Mail(
 # #         from_email=from_email,
@@ -65,7 +65,7 @@
 #     token = jwt.encode({'user_id': user.id}, 'secret_key', algorithm='HS256')
 #     current_site = get_current_site(request)
 #     encoded_token =  base64.urlsafe_b64encode(token.encode('utf-8')).decode('utf-8')
-    
+
 #     activation_url = f'http://{current_site.domain}/auth_user/activate/{encoded_token}'
 #     message = render_to_string('activate_email.html', {
 #         'user': user,
@@ -81,7 +81,7 @@
 #     email.attach_alternative(message, "text/html")
 #     email.send()
 #     connection = get_connection()
-#     connection.open() 
+#     connection.open()
 
 
 
@@ -104,12 +104,12 @@ from django.utils.html import strip_tags
 
 
 def send_activation_email(request, user):
-    token = jwt.encode({'user_id': user.id}, 'secret_key', algorithm='HS256')
+    token = jwt.encode({'user_id': str(user.id)}, 'secret_key', algorithm='HS256')
     current_site = get_current_site(request)
     print("hi")
     print(current_site.domain)
     encoded_token =  base64.urlsafe_b64encode(token.encode('utf-8')).decode('utf-8')
-    
+
     # activation_link = reverse('activate', kwargs={'token': token})
     activation_url = f'http://{current_site.domain}/auth_user/activate/{encoded_token}'
     message = render_to_string('activate_email.html', {
@@ -129,7 +129,7 @@ def send_activation_email(request, user):
 
     email.send()
     connection = get_connection()
-    connection.open()  
+    connection.open()
 
     # print(os.getenv('EMAIL_HOST_PASSWORD'))
     # send_mail(
@@ -139,5 +139,3 @@ def send_activation_email(request, user):
     #         [user.email],
     #         fail_silently=False,
     #     )
-
-
