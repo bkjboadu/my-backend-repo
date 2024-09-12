@@ -28,9 +28,15 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh  # Install the Heroku CLI
 
-      - name: Deploy to Heroku
+      - name: Authenticate with Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }} # Use Heroku API Key from GitHub Secrets
         run: |
-          heroku git:remote -a dropshop-backend
-          git push heroku main
+          echo "machine api.heroku.com login ${{ secrets.HEROKU_EMAIL }} password $HEROKU_API_KEY" > ~/.netrc
+          echo "machine git.heroku.com login ${{ secrets.HEROKU_EMAIL }} password $HEROKU_API_KEY" >> ~/.netrc
+          chmod 600 ~/.netrc  # Set the correct permissions on the netrc file
+          heroku git:remote -a dropshop-backend  # Set the Heroku remote
+
+      - name: Deploy to Heroku
+        run: |
+          git push heroku main  # Push the code to Heroku
