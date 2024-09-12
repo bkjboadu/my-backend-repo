@@ -19,6 +19,7 @@ python-decouple = "^3.8"
 dj-database-url = "^2.2.0"
 djangorestframework-simplejwt = "^5.3.1"
 gunicorn = "^23.0.0"
+sendgrid = "^6.11.0"
 
 
 [build-system]
