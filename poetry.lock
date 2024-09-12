@@ -280,16 +280,6 @@ files = [
 ]
 
 [[package]]
-name = "decouple"
-version = "0.0.7"
-description = "Decoupling logic"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "decouple-0.0.7.tar.gz", hash = "sha256:c253c1cc62b76e9720a066f334552548c6de1884bc3bdf456ddb62d61b867b09"},
-]
-
-[[package]]
 name = "dj-database-url"
 version = "2.2.0"
 description = "Use Database URLs in your Django Application."
@@ -969,4 +959,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "bb224fb4982174ba2595659f99564f643ba6bde53da4539d55b5587ad80556b8"
+content-hash = "ad48544ce65aae13f8712fcbb009eb738c42bcf4d73e477a07439447f1b18629"
