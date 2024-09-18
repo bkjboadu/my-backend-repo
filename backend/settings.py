@@ -47,11 +47,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "shop_app",
-    "auth_user",
     "rest_framework",
     "rest_framework_simplejwt",
     'rest_framework_simplejwt.token_blacklist',
+    "shop_app",
+    "auth_user",
+    'inventory_management',
+    'order_management',
+    'notifications',
+    'customer_support',
+    'analytics'
 ]
 
 REST_FRAMEWORK = {
