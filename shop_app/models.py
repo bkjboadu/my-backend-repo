@@ -16,7 +16,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class Brand(models.Model):
     name =  models.CharField(max_length=255, unique=True)
@@ -35,26 +35,26 @@ class Products(models.Model):
     category =   models.ForeignKey(Category, related_name='product_categories', on_delete=models.SET_NULL, null=True)
     brand =      models.ForeignKey(Brand, related_name='product_brands', on_delete=models.SET_NULL, null=True, blank=True)
     image =      models.ImageField(upload_to='product_images/', blank=True, null=True)
-    
+
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
-    
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Products, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='product_images/')
     alt_text = models.CharField(max_length=255, blank=True, null=True)
     is_primary = models.BooleanField(default=False)
-    
-    
+
+
 
     def __str__(self):
         return f"{self.product.name} Image"
-    
+
 
 class ProductVariant(models.Model):
     product = models.ForeignKey(Products, related_name='variants', on_delete=models.CASCADE)
@@ -74,7 +74,7 @@ class Pricing(models.Model):
 
     def __str__(self):
         return f"Pricing for {self.product.name}"
-    
+
 
 class Tags(models.Model):
     product = models.ManyToManyField(Products, related_name='tags')
@@ -82,7 +82,7 @@ class Tags(models.Model):
 
     def __str__(self):
         return self.tag
-    
+
 
 class ProductReview(models.Model):
     product = models.ForeignKey(Products, related_name='reviews', on_delete=models.CASCADE)
@@ -93,7 +93,7 @@ class ProductReview(models.Model):
 
     def __str__(self):
         return f"Review for {self.product.name} by {self.user}"
-    
+
 class SEO(models.Model):
     product = models.OneToOneField(Products, related_name='seo', on_delete=models.CASCADE)
     meta_title = models.CharField(max_length=255)
