@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 import os
-from decouple import config
+# from decouple import config
 from dotenv import load_dotenv
 import dj_database_url
 
@@ -97,6 +97,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
+<<<<<<< HEAD
 if os.getenv('ENV') == 'production':
     DATABASES = {
         'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
@@ -111,6 +112,21 @@ else:
             'HOST': config('DATABASE_HOST', default='localhost'),
             'PORT': config('DATABASE_PORT', default='5432'),
         }
+=======
+
+# Database
+# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dropshop_db',
+        'USER': 'postgres',
+        'PASSWORD': 'milly123',
+        'HOST': 'localhost',
+        'PORT': 5432
+>>>>>>> develop
     }
 
 # Password validation

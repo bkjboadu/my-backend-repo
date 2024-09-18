@@ -1,9 +1,9 @@
 from django.utils import timezone 
 import uuid
 from django.db import models
-import uuid
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUserManager
 from django.utils import timezone
+from json import JSONEncoder
 
 
 
@@ -45,21 +45,17 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     first_name = models.CharField(max_length=100,blank=True)
     last_name = models.CharField(max_length=100,blank=True)
     avatar = models.ImageField(upload_to='user_avatars',blank=True,null=True)
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    email_verified = models.BooleanField(default=False)
-
+    is_verified = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=15,blank=True,null=True)
-
     shipping_address = models.CharField(max_length=255, null=True, blank=True)
     billing_address = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     zipcode = models.CharField(max_length=10, null=True, blank=True)
     country = models.CharField(max_length=50, null=True, blank=True)
-
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(blank=True, null=True)
 
@@ -70,8 +66,15 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
 
     def __str__(self):
         return self.email
-
-
+    
+from json import JSONEncoder
+from uuid import UUID
+JSONEncoder_olddefault = JSONEncoder.default
+def JSONEncoder_newdefault(self, o):
+    if isinstance(o, UUID): return str(o)
+    return JSONEncoder_olddefault(self, o)
+JSONEncoder.default = JSONEncoder_newdefault
+   
 class BlacklistedToken(models.Model):
     token = models.CharField(max_length=255, unique=True)
     blacklisted_at = models.DateTimeField(auto_now_add=True)

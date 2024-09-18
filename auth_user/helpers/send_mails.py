@@ -131,6 +131,7 @@ def send_activation_email(request, user):
     connection = get_connection()
     connection.open()
 
+<<<<<<< HEAD
     # print(os.getenv('EMAIL_HOST_PASSWORD'))
     # send_mail(
     #         'Activate your account',
@@ -139,3 +140,6 @@ def send_activation_email(request, user):
     #         [user.email],
     #         fail_silently=False,
     #     )
+=======
+
+>>>>>>> develop
