@@ -1,8 +1,10 @@
 import base64
 import os
+from typing import Dict
 import requests
 from django.contrib.sites.shortcuts import get_current_site
 import jwt
+from django.forms.models import model_to_dict
 
 
 def send_activation_email(request, user):
@@ -34,6 +36,42 @@ def send_activation_email(request, user):
         "subject": "Activate your account",
         "htmlContent": message,
     }
+
+    response = requests.post(url, json=data, headers=headers)
+
+    if response.status_code == 201:
+        print("Email sent successfully!")
+    else:
+        print(f"Failed to send email. Status code: {response.status_code}")
+        print(f"Response: {response.text}")
+
+def send_mail(subject,message,recipient,sender:Dict=None):
+
+    if sender is None:
+        sender = {
+            'name':'bright',
+            'email':'brbojr@gmail.com'
+        }
+
+    if not isinstance(recipient,Dict):
+        recipient = model_to_dict(recipient)
+
+    BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json",
+    }
+
+    data = {
+        "sender": {"name": sender['name'], "email": sender['email']},
+        "to": [{"email": recipient['email'], "name": recipient['first_name']}],
+        "subject": "Activate your account",
+        "htmlContent": message,
+    }
+
+    url = "https://api.brevo.com/v3/smtp/email"
 
     response = requests.post(url, json=data, headers=headers)
 

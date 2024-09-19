@@ -7,14 +7,14 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 import logging
 
+
 from auth_user.helpers import send_password_reset_email
-from .serializers import DeleteAccountSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer, UserSerializer, LoginSerializer
+from .serializers import DeleteAccountSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer, UserProfileUpdateSerializer, UserSerializer, LoginSerializer
 from rest_framework.permissions import AllowAny,IsAuthenticated,IsAdminUser
 from auth_user.helpers.permissions import IsAdminOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from auth_user.models import CustomUser, CustomUserManager
 from django.urls import reverse
-from django.core.mail import send_mail
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes,force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -22,7 +22,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.http import Http404,JsonResponse
 from rest_framework.exceptions import NotFound
 import jwt
-from auth_user.helpers.send_mails import send_activation_email
+from auth_user.helpers.send_mails import send_activation_email,send_mail
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from django.contrib.auth import authenticate, login,logout
 from rest_framework_simplejwt.exceptions import TokenError
@@ -43,20 +43,15 @@ class UserSignupView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class Activate(APIView):
     permission_classes = ()
     def post(self, request, token):
         try:
             token = base64.urlsafe_b64decode(token).decode('utf-8')
-            print(f"Decoded token: {token}")
             decoded_token = jwt.decode(token, 'secret_key', algorithms=['HS256'])
-            print(f"Decoded JWT: {decoded_token}")
-            # encoded_token = request.GET.get('token')
 
             user_id = decoded_token['user_id']
             user = CustomUser.objects.get(id=user_id)
-            print(user)
         except (jwt.exceptions.DecodeError, CustomUser.DoesNotExist):
             raise Http404('Invalid activation link')
 
@@ -74,21 +69,25 @@ class UserLoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(self, request):
-        print(request.POST)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        print(f"User ID: {user.id}")
-        print(f"User: {user}")
-        # login(request, user)
-        print("hi")
         refresh = RefreshToken.for_user(user)
-        print(f"Refresh Token: {refresh}")
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }, status=status.HTTP_200_OK)
 
+class UserProfileUpdateView(generics.UpdateAPIView):
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserProfileUpdateSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def patch(self,request,*args,**kwargs):
+        return self.partial_update(request,*args,**kwargs)
 
 class UserLists(generics.ListAPIView):
     authentication_classes = (JWTAuthentication,)
@@ -109,12 +108,19 @@ class PasswordResetView(generics.GenericAPIView):
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
         reset_url = request.build_absolute_uri(
                  reverse('passwordresetconfirm', kwargs={'uidb64': uidb64, 'token': token}))
-        subject = 'Password reset'
-        message = f'Use this link to reset your password: {reset_url}'
-        from_email = 'jmillicent135@gmail.com'
-        recipient_list = [user.email]
-        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
+        subject = 'Password Reset'
+        message = (
+            f"Hello {user.first_name},\n\n"
+            f"We received a request to reset the password for your account. If you made this request, "
+            f"please click the link below to reset your password:\n\n"
+            f"{reset_url}\n\n"
+            f"If you didn't request a password reset, you can safely ignore this email. "
+            f"Your password will not be changed unless you click the link above.\n\n"
+            f"Thank you,\n"
+            f"The Dropshop Team"
+        )
+        send_mail(subject=subject,message= message,recipient=user)
         return Response({'success': 'Email sent  Click the link in your email to continue'}, status=status.HTTP_200_OK)
 
 class PasswordResetConfirm(generics.GenericAPIView):
@@ -165,7 +171,6 @@ class PasswordChange(generics.GenericAPIView):
 
 class DeleteAccount(generics.GenericAPIView):
     authentication_classes = (JWTAuthentication,)
-    # lookup_field ='pk'
     permission_classes = [IsAdminUser]
     serializer_class = DeleteAccountSerializer
     def delete(self,request,*args, **kwargs):
@@ -177,34 +182,21 @@ class DeleteAccount(generics.GenericAPIView):
         return Response({'detail: user deleted'})
 
 
-
 class LogoutView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         print(self.request.user.is_authenticated)
         # Get the user's refresh token from the request data
-        refresh_token = request.data.get('refresh')
+        refresh_token = request.data.get('refresh_token')
+        print(refresh_token)
         if not refresh_token:
             return Response({'error': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             # Blacklist the refresh token
             token = RefreshToken(refresh_token)
-            try:
-                token.blacklist()
-                print(token)
-            except:
-                # Token is already blacklisted
-                pass
-
-            access_token = AccessToken(token)
-            access_token.set_exp(lifetime=-1)
-            try:
-                access_token.blacklist()
-            except :
-                # Token is already blacklisted
-                pass
+            token.blacklist()
 
         except TokenError:
             return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_401_UNAUTHORIZED)

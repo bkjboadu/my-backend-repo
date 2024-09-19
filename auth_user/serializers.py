@@ -41,6 +41,21 @@ class UserSerializer(serializers.ModelSerializer):
         send_activation_email(request=self.context.get('request'), user=user)
         return user
 
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            'email', 'first_name', 'last_name', 'avatar', 'phone_number',
+            'shipping_address', 'billing_address', 'city', 'state', 'zipcode', 'country'
+        ]
+        extra_kwargs = {'email': {'required': False}}
+
+    def update(self, instance, validated_data):
+        # Update user instance with the validated data
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+        return instance
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
