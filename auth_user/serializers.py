@@ -20,10 +20,10 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('email', 'first_name', 'last_name','password', 'confirm_password')
         extra_kwargs = {'password': {'write_only': True}}
     def to_representation(self, instance):
-        data = super().to_representation(instance) 
+        data = super().to_representation(instance)
         data['uuid'] = str(instance.id)
         return data
- 
+
     def validate_password(self, password):
         validator = CustomPasswordValidator()
         validator.validate(password)
@@ -37,7 +37,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('confirm_password')
-        # Create the user
         user = CustomUser.objects.create_user(**validated_data)
         send_activation_email(request=self.context.get('request'), user=user)
         return user
@@ -59,7 +58,7 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError('Invalid user ID format')
         return {'user': user}
 
-    
+
 
 #Password management
 class PasswordResetSerializer(serializers.Serializer):
@@ -84,7 +83,7 @@ class PasswordResetConfirmSerializer(serializers.ModelSerializer):
         validator = CustomPasswordValidator()
         validator.validate(password)
         return password
-    
+
     def validate(self, data):
         password = data['password']
         """
@@ -93,7 +92,7 @@ class PasswordResetConfirmSerializer(serializers.ModelSerializer):
         if password != data['confirm_password']:
             raise serializers.ValidationError("Passwords do not match")
         return data
-    
+
 class PasswordChangeSerializer(PasswordResetConfirmSerializer):
     current_password = serializers.CharField(
         write_only=True,
@@ -107,8 +106,8 @@ class PasswordChangeSerializer(PasswordResetConfirmSerializer):
         current_password = data['current_password']
         if not user.check_password(current_password):
             raise serializers.ValidationError('you have entered the wrong password check and try again.')
-        
-    
+
+
 class DeleteAccountSerializer(PasswordResetSerializer):
     def get_user(self,email):
         user = CustomUser.objects.get(email=email)

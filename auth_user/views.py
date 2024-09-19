@@ -1,10 +1,11 @@
 from django.shortcuts import render
 import base64
-import json
+import json,asyncio
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+import logging
 
 from auth_user.helpers import send_password_reset_email
 from .serializers import DeleteAccountSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer, UserSerializer, LoginSerializer
@@ -37,10 +38,10 @@ class UserSignupView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
             return Response({"message": "User registered successfully!"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 
 class Activate(APIView):
@@ -52,13 +53,13 @@ class Activate(APIView):
             decoded_token = jwt.decode(token, 'secret_key', algorithms=['HS256'])
             print(f"Decoded JWT: {decoded_token}")
             # encoded_token = request.GET.get('token')
-            
+
             user_id = decoded_token['user_id']
             user = CustomUser.objects.get(id=user_id)
             print(user)
         except (jwt.exceptions.DecodeError, CustomUser.DoesNotExist):
             raise Http404('Invalid activation link')
-        
+
         if not user.is_verified:
             user.is_verified = True
             user.is_active = True
@@ -77,7 +78,7 @@ class UserLoginView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        print(f"User ID: {user.id}") 
+        print(f"User ID: {user.id}")
         print(f"User: {user}")
         # login(request, user)
         print("hi")
@@ -110,12 +111,12 @@ class PasswordResetView(generics.GenericAPIView):
                  reverse('passwordresetconfirm', kwargs={'uidb64': uidb64, 'token': token}))
         subject = 'Password reset'
         message = f'Use this link to reset your password: {reset_url}'
-        from_email = 'jmillicent135@gmail.com' 
+        from_email = 'jmillicent135@gmail.com'
         recipient_list = [user.email]
         send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
         return Response({'success': 'Email sent  Click the link in your email to continue'}, status=status.HTTP_200_OK)
-    
+
 class PasswordResetConfirm(generics.GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = PasswordResetConfirmSerializer
@@ -129,9 +130,9 @@ class PasswordResetConfirm(generics.GenericAPIView):
             user = CustomUser.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
                 user = None
-       
+
         if user is not None and default_token_generator.check_token(user, token):
-            
+
             if  user.check_password(password):
                 return Response({'detail':'password cannot be the same as previous password.'})
             user.set_password(password)
@@ -139,7 +140,7 @@ class PasswordResetConfirm(generics.GenericAPIView):
             return Response({'detail': 'Password successfully reset.'}, status=status.HTTP_200_OK)
 
         return Response({'detail': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 
 class PasswordChange(generics.GenericAPIView):
@@ -152,10 +153,10 @@ class PasswordChange(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         current_password = serializer.validated_data['current_password']
         user = self.request.user
-        
+
         if not user.check_password(current_password):
             raise NotFound("You have entered the wrong password, try again.")
-        
+
         password = serializer.validated_data['password']
         user.set_password(password)
         user.save()
@@ -166,7 +167,7 @@ class DeleteAccount(generics.GenericAPIView):
     authentication_classes = (JWTAuthentication,)
     # lookup_field ='pk'
     permission_classes = [IsAdminUser]
-    serializer_class = DeleteAccountSerializer 
+    serializer_class = DeleteAccountSerializer
     def delete(self,request,*args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -174,7 +175,7 @@ class DeleteAccount(generics.GenericAPIView):
         user.is_active = False
         user.delete()
         return Response({'detail: user deleted'})
-    
+
 
 
 class LogoutView(generics.GenericAPIView):

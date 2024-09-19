@@ -1,10 +1,12 @@
-from django.utils import timezone 
+from django.utils import timezone
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin,BaseUserManager
 from django.utils import timezone
 from json import JSONEncoder
+from uuid import UUID
 
+JSONEncoder_olddefault = JSONEncoder.default
 
 
 class CustomUserManager(BaseUserManager):
@@ -66,15 +68,15 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
 
     def __str__(self):
         return self.email
-    
-from json import JSONEncoder
-from uuid import UUID
-JSONEncoder_olddefault = JSONEncoder.default
+
+
+
 def JSONEncoder_newdefault(self, o):
     if isinstance(o, UUID): return str(o)
     return JSONEncoder_olddefault(self, o)
+
 JSONEncoder.default = JSONEncoder_newdefault
-   
+
 class BlacklistedToken(models.Model):
     token = models.CharField(max_length=255, unique=True)
     blacklisted_at = models.DateTimeField(auto_now_add=True)
