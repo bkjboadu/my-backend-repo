@@ -21,6 +21,7 @@ djangorestframework-simplejwt = "^5.3.1"
 gunicorn = "^23.0.0"
 sendgrid = "^6.11.0"
 black = "^24.8.0"
+django-cors-headers = "^4.4.0"
 
 
 [build-system]
