@@ -11,7 +11,7 @@ def send_activation_email(request, user):
     token = jwt.encode({"user_id": str(user.id)}, "secret_key", algorithm="HS256")
     encoded_token = base64.urlsafe_b64encode(token.encode("utf-8")).decode("utf-8")
     current_site = get_current_site(request)
-    activation_url = f"http://{current_site.domain}/auth_user/activate/{encoded_token}"
+    activation_url = f"http://{current_site.domain}/accounts/activate/{encoded_token}"
 
     url = "https://api.brevo.com/v3/smtp/email"
 

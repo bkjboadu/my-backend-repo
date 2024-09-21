@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class InventoryManagementConfig(AppConfig):
+class DropshopConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "inventory_management"

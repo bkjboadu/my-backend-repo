@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Cart, CartItem
 from .serializers import CartSerializer, CartItemSerializer
-from shop_app.models import Products
+from inventory_management.models import Products
 from rest_framework.permissions import IsAuthenticated
 
 

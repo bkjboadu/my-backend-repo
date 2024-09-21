@@ -1,10 +1,10 @@
 from django.urls import path
-from auth_user.views import *
+from user_management.views import *
 
 urlpatterns = [
     path("signup/", UserSignupView.as_view(), name="signup"),
     path("login/", UserLoginView.as_view(), name="login"),
-    path("userlists/", UserLists.as_view(), name="lists"),
+    path("users/", UserLists.as_view(), name="lists"),
     path("activate/<str:token>/", Activate.as_view(), name="activate"),
     path("password_reset/", PasswordResetView.as_view(), name="password_reset"),
     path(

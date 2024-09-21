@@ -2,11 +2,11 @@ import uuid
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import CustomUser
-from auth_user.helpers.validator import CustomPasswordValidator
+from user_management.helpers.validator import CustomPasswordValidator
 from django.core.mail import send_mail
 
 from django.utils.crypto import get_random_string
-from auth_user.helpers.send_mails import send_activation_email
+from user_management.helpers.send_mails import send_activation_email
 import jwt
 from django.contrib.auth.hashers import check_password
 

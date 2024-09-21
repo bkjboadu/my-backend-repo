@@ -6,9 +6,9 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 import logging, jwt, asyncio
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from auth_user.helpers.permissions import IsAdminOrReadOnly
+from user_management.helpers.permissions import IsAdminOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from auth_user.models import CustomUser
+from user_management.models import CustomUser
 from django.urls import reverse
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes, force_str
@@ -16,7 +16,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.http import Http404, JsonResponse
 from rest_framework.exceptions import NotFound
-from auth_user.helpers.send_mails import send_mail
+from user_management.helpers.send_mails import send_mail
 from rest_framework_simplejwt.exceptions import TokenError
 from django.conf  import settings
 
@@ -81,7 +81,7 @@ class UserProfileUpdateView(generics.UpdateAPIView):
 
 class UserLists(generics.ListAPIView):
     authentication_classes = (JWTAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
     serializer_class = UserSerializer
     queryset = CustomUser.objects.all()
 

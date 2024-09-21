@@ -51,10 +51,9 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
-    "shop_app",
-    "auth_user",
-    "user_app",
+    "user_management",
     "inventory_management",
+    "cart_management",
     "order_management",
     "notifications",
     "customer_support",
@@ -84,7 +83,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "backend.urls"
-AUTH_USER_MODEL = "auth_user.CustomUser"
+AUTH_USER_MODEL = "user_management.CustomUser"
 CORS_ALLOW_ALL_ORIGINS = True
 
 

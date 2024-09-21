@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-from shop_app.models import Products
+from inventory_management.models import Products
 
 
 class Cart(models.Model):
