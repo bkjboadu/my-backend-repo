@@ -1,34 +1,24 @@
-from django.shortcuts import render
 import base64
-import json,asyncio
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-import logging
-
-
-from auth_user.helpers import send_password_reset_email
-from .serializers import DeleteAccountSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer, UserProfileUpdateSerializer, UserSerializer, LoginSerializer
-from rest_framework.permissions import AllowAny,IsAuthenticated,IsAdminUser
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+import logging, jwt, asyncio
+from .serializers import *
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from auth_user.helpers.permissions import IsAdminOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from auth_user.models import CustomUser, CustomUserManager
+from auth_user.models import CustomUser
 from django.urls import reverse
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import force_bytes,force_str
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
-from django.http import Http404,JsonResponse
+from django.http import Http404, JsonResponse
 from rest_framework.exceptions import NotFound
-import jwt
-from auth_user.helpers.send_mails import send_activation_email,send_mail
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from django.contrib.auth import authenticate, login,logout
+from auth_user.helpers.send_mails import send_mail
 from rest_framework_simplejwt.exceptions import TokenError
-from django.http import JsonResponse, Http404
 from django.conf  import settings
-
 
 
 class UserSignupView(generics.GenericAPIView):
@@ -38,18 +28,18 @@ class UserSignupView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
+            serializer.save()
             return Response({"message": "User registered successfully!"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Activate(APIView):
     permission_classes = ()
+
     def post(self, request, token):
         try:
             token = base64.urlsafe_b64decode(token).decode('utf-8')
             decoded_token = jwt.decode(token, 'secret_key', algorithms=['HS256'])
-
             user_id = decoded_token['user_id']
             user = CustomUser.objects.get(id=user_id)
         except (jwt.exceptions.DecodeError, CustomUser.DoesNotExist):
@@ -99,6 +89,7 @@ class UserLists(generics.ListAPIView):
 class PasswordResetView(generics.GenericAPIView):
     serializer_class = PasswordResetSerializer
     permission_classes = [AllowAny]
+
     def post(self, request, format=None,*args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -173,7 +164,8 @@ class DeleteAccount(generics.GenericAPIView):
     authentication_classes = (JWTAuthentication,)
     permission_classes = [IsAdminUser]
     serializer_class = DeleteAccountSerializer
-    def delete(self,request,*args, **kwargs):
+
+    def delete(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = CustomUser.objects.get(email=serializer.validated_data['email'])
@@ -187,14 +179,12 @@ class LogoutView(generics.GenericAPIView):
 
     def post(self, request):
         print(self.request.user.is_authenticated)
-        # Get the user's refresh token from the request data
         refresh_token = request.data.get('refresh_token')
         print(refresh_token)
         if not refresh_token:
             return Response({'error': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Blacklist the refresh token
             token = RefreshToken(refresh_token)
             token.blacklist()
 
@@ -202,6 +192,6 @@ class LogoutView(generics.GenericAPIView):
             return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         except Exception as e:
-            return Response({'error': 'Failed to logout user.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': f'{e}: Failed to logout user.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({'message': 'User has been logged out successfully.'}, status=status.HTTP_200_OK)

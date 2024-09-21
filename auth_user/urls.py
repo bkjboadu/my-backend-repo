@@ -1,15 +1,20 @@
 from django.urls import path
 from auth_user.views import *
+
 urlpatterns = [
-    path('signup/', UserSignupView.as_view(), name='signup'),
-    path('login/', UserLoginView.as_view(), name='login'),
-    path('userlists/', UserLists.as_view(), name= 'lists'),
-    path('activate/<str:token>/', Activate.as_view(), name='activate'),
-    path('password_reset/', PasswordResetView.as_view(), name='password_reset'),
-    path('password_reset_confirm/<uidb64>/<token>/', PasswordResetConfirm.as_view(), name= 'passwordresetconfirm'),
-    path('password_change/', PasswordChange.as_view(), name= 'passwordchange'),
-    path('profile_update/',UserProfileUpdateView.as_view(),name='profile-update'),
-    path('delete_account/', DeleteAccount.as_view(), name= 'delete'),
-    path('activate/<token>/', Activate.as_view(), name= 'activate'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    path("signup/", UserSignupView.as_view(), name="signup"),
+    path("login/", UserLoginView.as_view(), name="login"),
+    path("userlists/", UserLists.as_view(), name="lists"),
+    path("activate/<str:token>/", Activate.as_view(), name="activate"),
+    path("password_reset/", PasswordResetView.as_view(), name="password_reset"),
+    path(
+        "password_reset_confirm/<uidb64>/<token>/",
+        PasswordResetConfirm.as_view(),
+        name="passwordresetconfirm",
+    ),
+    path("password_change/", PasswordChange.as_view(), name="passwordchange"),
+    path("profile_update/", UserProfileUpdateView.as_view(), name="profile-update"),
+    path("delete_account/", DeleteAccount.as_view(), name="delete"),
+    path("activate/<token>/", Activate.as_view(), name="activate"),
+    path("logout/", LogoutView.as_view(), name="logout"),
 ]

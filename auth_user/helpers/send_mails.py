@@ -45,15 +45,13 @@ def send_activation_email(request, user):
         print(f"Failed to send email. Status code: {response.status_code}")
         print(f"Response: {response.text}")
 
-def send_mail(subject,message,recipient,sender:Dict=None):
+
+def send_mail(subject, message, recipient, sender: Dict = None):
 
     if sender is None:
-        sender = {
-            'name':'bright',
-            'email':'brbojr@gmail.com'
-        }
+        sender = {"name": "bright", "email": "brbojr@gmail.com"}
 
-    if not isinstance(recipient,Dict):
+    if not isinstance(recipient, Dict):
         recipient = model_to_dict(recipient)
 
     BREVO_API_KEY = os.getenv("BREVO_API_KEY")
@@ -65,8 +63,8 @@ def send_mail(subject,message,recipient,sender:Dict=None):
     }
 
     data = {
-        "sender": {"name": sender['name'], "email": sender['email']},
-        "to": [{"email": recipient['email'], "name": recipient['first_name']}],
+        "sender": {"name": sender["name"], "email": sender["email"]},
+        "to": [{"email": recipient["email"], "name": recipient["first_name"]}],
         "subject": "Activate your account",
         "htmlContent": message,
     }
