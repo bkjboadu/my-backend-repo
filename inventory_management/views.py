@@ -1,68 +1,96 @@
-from django.shortcuts import render
-from rest_framework import generics
-from .models import Brand, Category, ParentCategory, ProductImage, Products, Tags
-from .serializers import (
-    BrandSerializer,
-    CategorySerializer,
-    ParentCategorySerializer,
-    ProductImageSerializer,
-    ProductSerializer,
-    TagsSerializer,
-)
-from inventory_management import serializers
+from rest_framework.serializers import Serializer
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAdminUser,IsAuthenticated
+from .models import Store, Category, Supplier, Product, ProductVariant, ProductImage, StockEntry,ProductReview
+from .serializers import StoreSerializer,ProductSerializer,ProductVariantSerializer,StockEntrySerializer,SupplierSerializer,ProductImageSerializer,CategorySerializer,ProductReviewSerializer
+
+# Store views
+class StoreListCreateView(ListCreateAPIView):
+    query = Store.objects.all()
+    Serializer_class = StoreSerializer
+    permission_classes = [IsAuthenticated,IsAdminUser]
+
+class StoreDetailView(RetrieveUpdateDestroyAPIView):
+    query = Store.objects.all()
+    serializer_class = StoreSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
 
 
-class ProductListCreateView(generics.ListCreateAPIView):
-    queryset = Products.objects.all()
-    serializer_class = ProductSerializer
-
-
-class ParentCategoryCreateView(generics.ListCreateAPIView):
-    queryset = ParentCategory.objects.all()
-    serializer_class = ParentCategorySerializer
-
-
-class CategoryListCreateAPIView(generics.ListCreateAPIView):
+# Category Views
+class CategoryListCreateView(ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
 
-    def perform_create(self, serializer):
-        parent_category_name = self.request.data.get("parent_category")
-        if parent_category_name:
-            try:
-                parent_category = ParentCategory.objects.get(pk=parent_category_name)
-                serializer.save(parent_category=parent_category)
-            except ParentCategory.DoesNotExist:
-                raise serializers.ValidationError("Parent category does not exist.")
-        else:
-            serializer.save()
+class CategoryDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+# Supplier Views
+class SupplierListCreateView(ListCreateAPIView):
+    queryset = Supplier.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+class SupplierDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Supplier.objects.all()
+    serializer_class = SupplierSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+# Product Views
+class ProductListCreateView(ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+class ProductDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
 
 
-class BrandListCreateView(generics.ListCreateAPIView):
-    queryset = Brand.objects.all()
-    serializer_class = BrandSerializer
+# Product Variant Views
+class ProductVariantListCreateView(ListCreateAPIView):
+    queryset = ProductVariant.objects.all()
+    serializer_class = ProductVariantSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+class ProductVariantDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = ProductVariant.objects.all()
+    serializer_class = ProductVariantSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
 
 
-class ProductImageListCreateView(generics.ListCreateAPIView):
+# Product Image Views
+class ProductImageListCreateView(ListCreateAPIView):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
 
+class ProductImageDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = ProductImage.objects.all()
+    serializer_class = ProductImageSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
 
-class TagsListCreateView(generics.ListCreateAPIView):
-    queryset = Tags.objects.all()
-    serializer_class = TagsSerializer
+# Stock Entry Views
+class StockEntryListCreateView(ListCreateAPIView):
+    queryset = StockEntry.objects.all()
+    serializer_class = StockEntrySerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
 
+class StockEntryDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = StockEntry.objects.all()
+    serializer_class = StockEntrySerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
 
-class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+# ProductReview Views
+class ProductReviewListCreateView(ListCreateAPIView):
+    queryset = ProductReview.objects.all()
+    serializer_class = ProductReviewSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]
 
-
-class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Products.objects.all()
-    serializer_class = ProductSerializer
-
-
-class ParentCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ParentCategory.objects.all()
-    serializer_class = ParentCategorySerializer
+class ProductReviewDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = ProductReview.objects.all()
+    serializer_class = ProductReviewSerializer
+    permission_classes =  [IsAuthenticated,IsAdminUser]

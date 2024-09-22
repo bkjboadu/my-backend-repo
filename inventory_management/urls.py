@@ -1,45 +1,43 @@
 from django.urls import path
 from .views import (
-    CategoryDetailView,
-    ParentCategoryCreateView,
-    ParentCategoryDetailView,
-    ProductDetailView,
-    ProductImageListCreateView,
-    ProductListCreateView,
-    CategoryListCreateAPIView,
-    TagsListCreateView,
-    BrandListCreateView,
+    StoreListCreateView, StoreDetailView, CategoryListCreateView, CategoryDetailView,
+    SupplierListCreateView, SupplierDetailView, ProductListCreateView, ProductDetailView,
+    ProductVariantListCreateView, ProductVariantDetailView, ProductImageListCreateView,
+    ProductImageDetailView, StockEntryListCreateView, StockEntryDetailView,ProductReviewListCreateView,
+    ProductReviewDetailView
 )
 
 urlpatterns = [
-    path(
-        "create_products/", ProductListCreateView.as_view(), name="product-list-create"
-    ),
-    path(
-        "product_images/",
-        ProductImageListCreateView.as_view(),
-        name="product-image-create",
-    ),
-    path(
-        "categories/", CategoryListCreateAPIView.as_view(), name="category-list-create"
-    ),
-    path("tags/", TagsListCreateView.as_view(), name="tags"),
-    path("brands/", BrandListCreateView.as_view(), name="create-brands"),
-    path(
-        "parent_categories/<int:pk>/",
-        ParentCategoryDetailView.as_view(),
-        name="parent-category-detail",
-    ),
-    path(
-        "parent_categories/",
-        ParentCategoryCreateView.as_view(),
-        name="parent-category-list",
-    ),
-    path("categories/<int:pk>/", CategoryDetailView.as_view(), name="category-detail"),
-    path("products/<int:pk>/", ProductDetailView.as_view(), name="product-detail"),
-    path(
-        "parent_category/<int:pk>/",
-        CategoryDetailView.as_view(),
-        name="category-detail",
-    ),
+    # Store URLs
+    path('stores/', StoreListCreateView.as_view(), name='store-list-create'),
+    path('stores/<int:pk>/', StoreDetailView.as_view(), name='store-detail'),
+
+    # Category URLs
+    path('categories/', CategoryListCreateView.as_view(), name='category-list-create'),
+    path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
+
+    # Supplier URLs
+    path('suppliers/', SupplierListCreateView.as_view(), name='supplier-list-create'),
+    path('suppliers/<int:pk>/', SupplierDetailView.as_view(), name='supplier-detail'),
+
+    # Product URLs
+    path('products/', ProductListCreateView.as_view(), name='product-list-create'),
+    path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
+
+    # Product Variant URLs
+    path('product-variants/', ProductVariantListCreateView.as_view(), name='product-variant-list-create'),
+    path('product-variants/<int:pk>/', ProductVariantDetailView.as_view(), name='product-variant-detail'),
+
+    # Product Image URLs
+    path('product-images/', ProductImageListCreateView.as_view(), name='product-image-list-create'),
+    path('product-images/<int:pk>/', ProductImageDetailView.as_view(), name='product-image-detail'),
+
+    # Stock Entry URLs
+    path('stock-entries/', StockEntryListCreateView.as_view(), name='stock-entry-list-create'),
+    path('stock-entries/<int:pk>/', StockEntryDetailView.as_view(), name='stock-entry-detail'),
+
+    # Product Review URLs
+    path('products/<int:product_id>/reviews/', ProductReviewListCreateView.as_view(), name='product-review-list-create'),
+    path('products/<int:product_id>/reviews/<int:pk>/', ProductReviewDetailView.as_view(), name='product-review-detail'),
+
 ]

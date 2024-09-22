@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "inventory_management",
     "cart_management",
     "order_management",
+    "order_tracking",
     "notifications",
     "customer_support",
     "analytics",
