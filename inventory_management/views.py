@@ -1,19 +1,31 @@
 from rest_framework.serializers import Serializer
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAdminUser,IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
 from .models import Store, Category, Supplier, Product, ProductVariant, ProductImage, StockEntry,ProductReview
 from .serializers import StoreSerializer,ProductSerializer,ProductVariantSerializer,StockEntrySerializer,SupplierSerializer,ProductImageSerializer,CategorySerializer,ProductReviewSerializer
 
 # Store views
 class StoreListCreateView(ListCreateAPIView):
-    query = Store.objects.all()
-    Serializer_class = StoreSerializer
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
     permission_classes = [IsAuthenticated,IsAdminUser]
 
 class StoreDetailView(RetrieveUpdateDestroyAPIView):
-    query = Store.objects.all()
+    queryset = Store.objects.all()
     serializer_class = StoreSerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
+
+    def destroy(self,request,*args,**kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {
+                "detail":f"Store '{instance.name}' has been deleted successfully."
+            },
+            status= status.HTTP_200_OK
+        )
 
 
 # Category Views
@@ -27,10 +39,20 @@ class CategoryDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = CategorySerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
 
+    def destroy(self,request,*args,**kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {
+                "detail":f"Category '{instance.name}' has been deleted successfully."
+            },
+            status= status.HTTP_200_OK
+        )
+
 # Supplier Views
 class SupplierListCreateView(ListCreateAPIView):
     queryset = Supplier.objects.all()
-    serializer_class = CategorySerializer
+    serializer_class = SupplierSerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
 
 class SupplierDetailView(RetrieveUpdateDestroyAPIView):
