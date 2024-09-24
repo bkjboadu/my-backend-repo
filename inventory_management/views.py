@@ -3,6 +3,7 @@ from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIVi
 from rest_framework.permissions import IsAdminUser,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 from .models import Store, Category, Supplier, Product, ProductVariant, ProductImage, StockEntry,ProductReview
 from .serializers import StoreSerializer,ProductSerializer,ProductVariantSerializer,StockEntrySerializer,SupplierSerializer,ProductImageSerializer,CategorySerializer,ProductReviewSerializer
 
@@ -60,6 +61,16 @@ class SupplierDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = SupplierSerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
 
+    def destroy(self,request,*args,**kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {
+                "detail":f"Supplier'{instance.name}' has been deleted successfully."
+            },
+            status= status.HTTP_200_OK
+        )
+
 # Product Views
 class ProductListCreateView(ListCreateAPIView):
     queryset = Product.objects.all()
@@ -70,6 +81,17 @@ class ProductDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
+
+    def destroy(self,request,*args,**kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {
+                "detail":f"Product'{instance.name}' has been deleted successfully."
+            },
+            status= status.HTTP_200_OK
+        )
+
 
 
 # Product Variant Views
@@ -83,6 +105,16 @@ class ProductVariantDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = ProductVariantSerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
 
+    def destroy(self,request,*args,**kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {
+                "detail":f"Product Variant'{instance.name}' has been deleted successfully."
+            },
+            status= status.HTTP_200_OK
+        )
+
 
 # Product Image Views
 class ProductImageListCreateView(ListCreateAPIView):
@@ -95,6 +127,16 @@ class ProductImageDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = ProductImageSerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
 
+    def destroy(self,request,*args,**kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {
+                "detail":f"Product Image '{instance.product.name}' has been deleted successfully."
+            },
+            status= status.HTTP_200_OK
+        )
+
 # Stock Entry Views
 class StockEntryListCreateView(ListCreateAPIView):
     queryset = StockEntry.objects.all()
@@ -106,13 +148,44 @@ class StockEntryDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = StockEntrySerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
 
+    def destroy(self,request,*args,**kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {
+                "detail":f"StockEntry '{instance.product.name}' has been deleted successfully."
+            },
+            status= status.HTTP_200_OK
+        )
+
 # ProductReview Views
 class ProductReviewListCreateView(ListCreateAPIView):
     queryset = ProductReview.objects.all()
     serializer_class = ProductReviewSerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
 
+    def get_queryset(self):
+        product_id = self.kwargs['product_id']
+        print(product_id)
+        return ProductReview.objects.filter(product_id=product_id)
+
+    def perform_create(self,serializer):
+        product_id = self.kwargs['product_id']
+        product = get_object_or_404(Product, pk=product_id)
+        print(product)
+        serializer.save(user=self.request.user,product=product)
+
 class ProductReviewDetailView(RetrieveUpdateDestroyAPIView):
     queryset = ProductReview.objects.all()
     serializer_class = ProductReviewSerializer
     permission_classes =  [IsAuthenticated,IsAdminUser]
+
+    def destroy(self,request,*args,**kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {
+                "detail":f"Product Review for '{instance.product.name}' has been deleted successfully."
+            },
+            status= status.HTTP_200_OK
+        )

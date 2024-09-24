@@ -47,3 +47,4 @@ class ProductReviewSerializer(ModelSerializer):
     class Meta:
         model = ProductReview
         fields = '__all__'
+        read_only_fields = ('product', 'user', 'created_at', 'updated_at')
