@@ -8,6 +8,7 @@ urlpatterns = [
     path("inventory/", include("inventory_management.urls")),
     path("carts/", include("cart_management.urls")),
     path('orders/',include("order_management.urls")),
+    path('track_orders/', include("order_tracking.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]
