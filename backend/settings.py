@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 import dj_database_url
 
 
-load_dotenv()
+# load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -119,6 +119,8 @@ else:
             "PORT": config("DATABASE_PORT", default="5432"),
         }
     }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

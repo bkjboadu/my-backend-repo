@@ -1190,4 +1190,8 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
+<<<<<<< HEAD
+content-hash = "dc47281cff075b48bcd9a92086dd03f1e531c5812d22b4cf380d021344456538"
+=======
 content-hash = "7681df3d1f232a9ee3800d0c2c67c7d95cd7c60628209d6873d0364e517a8d35"
+>>>>>>> inventory_management
