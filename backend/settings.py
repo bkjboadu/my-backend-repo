@@ -13,12 +13,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 import os
-from decouple import config
-from dotenv import load_dotenv
-import dj_database_url
+# from decouple import config
+# from dotenv import load_dotenv
+# import dj_database_url
 
 
-load_dotenv()
+# load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -106,19 +106,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
-if os.getenv("ENV") == "production":
-    DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": config("DATABASE_NAME"),
-            "USER": config("DATABASE_USER"),
-            "PASSWORD": config("DATABASE_PASSWORD"),
-            "HOST": config("DATABASE_HOST", default="localhost"),
-            "PORT": config("DATABASE_PORT", default="5432"),
-        }
+# if os.getenv("ENV") == "production":
+#     DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
+# else:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.postgresql",
+#             "NAME": config("DATABASE_NAME"),
+#             "USER": config("DATABASE_USER"),
+#             "PASSWORD": config("DATABASE_PASSWORD"),
+#             "HOST": config("DATABASE_HOST", default="localhost"),
+#             "PORT": config("DATABASE_PORT", default="5432"),
+#         }
+#     }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dropshop_db',
+        'USER': 'postgres',
+        'PASSWORD': 'milly123',
+        'HOST': 'localhost',
+        'PORT': 5432
     }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
