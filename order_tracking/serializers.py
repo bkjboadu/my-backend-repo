@@ -4,7 +4,7 @@ from order_management.models import Order, Shipment
 from rest_framework import serializers
 
 from order_management.serializers import OrderItemSerializer
-from .models import Order, Shipment
+from order_management.models import Order, Shipment
 
 
 
