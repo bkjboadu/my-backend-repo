@@ -14,9 +14,16 @@ psycopg2-binary = "^2.9.9"
 aiohttp = "^3.10.5"
 requests = "^2.32.3"
 python-dotenv = "^1.0.1"
-decouple = "^0.0.7"
 pillow = "^10.4.0"
 python-decouple = "^3.8"
+<<<<<<< HEAD
+=======
+dj-database-url = "^2.2.0"
+djangorestframework-simplejwt = "^5.3.1"
+gunicorn = "^23.0.0"
+sendgrid = "^6.11.0"
+black = "^24.8.0"
+>>>>>>> inventory_management
 django-cors-headers = "^4.4.0"
 
 

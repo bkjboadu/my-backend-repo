@@ -1,0 +1,37 @@
+name: Deploy Backend to Heroku
+
+on:
+  push:
+    branches:
+      - main # Trigger the workflow on pushes to the 'main' branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # Run the job on the latest version of Ubuntu
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 # Check out the repository code
+
+      - name: Set up Python
+        uses: actions/setup-python@v2 # Set up the Python environment
+        with:
+          python-version: "3.12" # Adjust the Python version according to your needs
+
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh # Install the Heroku CLI
+
+      - name: Authenticate with Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+        run: |
+          echo "machine api.heroku.com login ${{ secrets.HEROKU_EMAIL }} password $HEROKU_API_KEY" > ~/.netrc
+          echo "machine git.heroku.com login ${{ secrets.HEROKU_EMAIL }} password $HEROKU_API_KEY" >> ~/.netrc
+          chmod 600 ~/.netrc # Set correct permissions for security
+          heroku git:remote -a dropshop-backend
+
+      - name: Deploy to Heroku
+        run: |
+          ./deploy-to-heroku.sh
