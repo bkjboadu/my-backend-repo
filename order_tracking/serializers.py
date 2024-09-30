@@ -2,6 +2,8 @@ from rest_framework import serializers
 from order_management.models import Order, Shipment
 
 from rest_framework import serializers
+
+from order_management.serializers import OrderItemSerializer
 from .models import Order, Shipment
 
 
@@ -17,4 +19,4 @@ class OrderTrackingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'status', 'created_at', 'updated_at', 'items', 'shipment']  
+        fields = ['order_number', 'status', 'created_at', 'updated_at', 'items', 'shipment']  
