@@ -85,7 +85,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "backend.urls"
 AUTH_USER_MODEL = "user_management.CustomUser"
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = ['https://dropshop-frontend-de36abef2b64.herokuapp.com']
 
 
 TEMPLATES = [
