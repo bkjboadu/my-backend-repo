@@ -1,3 +1,4 @@
 #!/bin/bash
 
-poetry run python manage.py runserver
+# Activate the Poetry environment and run Gunicorn with Uvicorn workers for ASGI
+poetry run gunicorn backend.asgi:application -w 4 -k uvicorn.workers.UvicornWorker
