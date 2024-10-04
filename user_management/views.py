@@ -26,7 +26,8 @@ from django.views import View
 from rest_framework.exceptions import NotFound
 from user_management.helpers.send_mails import send_mail
 from rest_framework_simplejwt.exceptions import TokenError
-from django.conf  import settings
+from backend.settings import GOOGLE_OAUTH_CLIENT_ID,GOOGLE_OAUTH_CLIENT_SECRET
+from django.conf import settings
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 import requests
@@ -38,7 +39,7 @@ import requests
 class GoogleLoginView(View):
     def get(self, request, *args, **kwargs):
 
-        client_id = settings.GOOGLE_OAUTH_CLIENT_ID
+        client_id = GOOGLE_OAUTH_CLIENT_ID
         redirect_uri = settings.LOGIN_REDIRECT_URL
         google_login_url = (
             f"https://accounts.google.com/o/oauth2/auth?"
@@ -57,8 +58,8 @@ class GoogleCallbackView(View):
         token_url = "https://oauth2.googleapis.com/token"
         data = {
             'code': code,
-            'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
-            'client_secret': settings.GOOGLE_OAUTH_CLIENT_SECRET,
+            'client_id': GOOGLE_OAUTH_CLIENT_ID,
+            'client_secret': GOOGLE_OAUTH_CLIENT_SECRET,
             'redirect_uri': settings.LOGIN_REDIRECT_URL,
             'grant_type': 'authorization_code',
         }
@@ -72,7 +73,7 @@ class GoogleCallbackView(View):
         idinfo = id_token.verify_oauth2_token(
             token_json['id_token'],
             google_requests.Request(),
-            settings.GOOGLE_OAUTH_CLIENT_ID
+            GOOGLE_OAUTH_CLIENT_ID
         )
 
         # Get or create user
