@@ -13,12 +13,20 @@ class Order(models.Model):
             ('out_for_delivery', 'Out for Delivery'),
             ('delivered', 'Delivered'),
             ('canceled', 'Canceled'),
+            ('failed_delivery', 'Failed Delivery'),
             ('returned', 'Returned'),
     ]
+
+    PAYMENT_STATUS_CHOICES = [
+            ('unpaid', 'Unpaid'),
+            ('paid', 'Paid'),
+            ('failed', 'Failed'),
+        ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="orders")
     order_number = models.UUIDField(default=uuid.uuid4,editable=False,unique=True)
     status = models.CharField(max_length=20,choices=STATUS_CHOICES,default='pending')
+    payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default='unpaid')
     total_amount = models.DecimalField(max_digits=10,decimal_places=2,default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

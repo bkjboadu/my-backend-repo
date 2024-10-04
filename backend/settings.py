@@ -38,6 +38,10 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
+#stripe details
+
+STRIPE_PUBLISHABLE_KEY = "pk_live_51OY6ZUDpqLM13tAUXKnwnlHDs131u2qeJ7tPxMEmFTs9QPuytDjmIikrF3bmNbjDO3ynRLjPykxusu7X6TlVC7OS00gtUxjaNQ"
+STRIPE_SECRET_KEY = "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"
 # Application definition
 
 INSTALLED_APPS = [
@@ -59,6 +63,7 @@ INSTALLED_APPS = [
     "notifications",
     "customer_support",
     "analytics",
+    "payment"
 ]
 
 REST_FRAMEWORK = {

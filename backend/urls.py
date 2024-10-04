@@ -7,6 +7,7 @@ urlpatterns = [
     path("accounts/", include("user_management.urls")),
     path("inventory/", include("inventory_management.urls")),
     path("carts/", include("cart_management.urls")),
+    path("payments/",include("payment.urls")),
     path('orders/',include("order_management.urls")),
     path('track_orders/', include("order_tracking.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
