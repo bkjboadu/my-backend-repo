@@ -11,16 +11,81 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from user_management.helpers.permissions import IsAdminOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from user_management.models import CustomUser
+
+
 from django.urls import reverse
+from django.shortcuts import redirect
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.http import Http404, JsonResponse
+from django.contrib.auth import login
+from django.views import View
+
 from rest_framework.exceptions import NotFound
 from user_management.helpers.send_mails import send_mail
 from rest_framework_simplejwt.exceptions import TokenError
 from django.conf  import settings
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token
+import requests
+
+
+
+
+# Google login view as a RedirectView
+class GoogleLoginView(View):
+    def get(self, request, *args, **kwargs):
+
+        client_id = settings.GOOGLE_OAUTH_CLIENT_ID
+        redirect_uri = settings.LOGIN_REDIRECT_URL
+        google_login_url = (
+            f"https://accounts.google.com/o/oauth2/auth?"
+            f"response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope=openid%20email%20profile"
+        )
+        return redirect(google_login_url)
+
+# Google callback view for handling OAuth response
+class GoogleCallbackView(View):
+    def get(self, request, *args, **kwargs):
+        code = request.GET.get('code')
+        if not code:
+            return JsonResponse({'error': 'Missing authorization code'}, status=400)
+
+        # Exchange authorization code for access token
+        token_url = "https://oauth2.googleapis.com/token"
+        data = {
+            'code': code,
+            'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
+            'client_secret': settings.GOOGLE_OAUTH_CLIENT_SECRET,
+            'redirect_uri': settings.LOGIN_REDIRECT_URL,
+            'grant_type': 'authorization_code',
+        }
+        token_response = requests.post(token_url, data=data)
+        token_json = token_response.json()
+
+        if 'id_token' not in token_json:
+            return JsonResponse({'error': 'Failed to retrieve token'}, status=400)
+
+        # Verify token and get user info
+        idinfo = id_token.verify_oauth2_token(
+            token_json['id_token'],
+            google_requests.Request(),
+            settings.GOOGLE_OAUTH_CLIENT_ID
+        )
+
+        # Get or create user
+        user, created = CustomUser.objects.get_or_create(email=idinfo['email'])
+        if created:
+            user.first_name = idinfo.get('given_name', '')
+            user.last_name = idinfo.get('family_name', '')
+            user.save()
+
+
+        # Log in the user
+        login(request, user, backend='user_management.oauth.GoogleAuthBackend')
+        return JsonResponse({'message': 'Google login successful'})
 
 
 class UserSignupView(generics.GenericAPIView):

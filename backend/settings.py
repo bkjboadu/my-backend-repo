@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import dj_database_url
 
 
-# load_dotenv()
+load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -52,8 +52,25 @@ INSTALLED_APPS = [
     "notifications",
     "customer_support",
     "analytics",
-    "payment"
+    "payment",
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.apple',
 ]
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'user_management.oauth.GoogleAuthBackend',
+]
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -77,8 +94,12 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
+# GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
+# GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
+
+
+GOOGLE_OAUTH_CLIENT_ID = "632285067635-a8poom0sr02n318bk3mgmdh6ap6ebd8j.apps.googleusercontent.com"
+GOOGLE_OAUTH_CLIENT_SECRET  = "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"
 
 LOGIN_REDIRECT_URL = 'http://localhost:8000/accounts/google/login/callback/'
 
@@ -96,6 +117,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware"
 ]
 
 ROOT_URLCONF = "backend.urls"

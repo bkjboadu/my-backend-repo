@@ -24,6 +24,9 @@ black = "^24.8.0"
 django-cors-headers = "^4.4.0"
 uvicorn = "^0.31.0"
 stripe = "^11.1.0"
+google-auth = "^2.35.0"
+google-auth-oauthlib = "^1.2.1"
+google-auth-httplib2 = "^0.2.0"
 
 
 [build-system]
