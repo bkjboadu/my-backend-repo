@@ -42,6 +42,7 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
+    "django.contrib.sites",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -59,13 +60,55 @@ INSTALLED_APPS = [
     "notifications",
     "customer_support",
     "analytics",
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.apple',
 ]
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend', 
+    'allauth.account.auth_backends.AuthenticationBackend', 
+]
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'  
+ACCOUNT_AUTHENTICATION_METHOD = 'email' 
+ACCOUNT_EMAIL_REQUIRED = True  
+
+# LOGIN_REDIRECT_URL = '/'
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 }
+
+# Google OAuth settings in Django
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
+
+LOGIN_REDIRECT_URL = 'http://localhost:8000/accounts/google/login/callback/'
+ 
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
