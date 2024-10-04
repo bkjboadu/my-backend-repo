@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticated,IsAdminUser
+from rest_framework.permissions import IsAuthenticated,IsAdminUser,IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Cart,CartItem,Wishlist,PromotionCode
@@ -81,13 +81,14 @@ class UpdateCartItemView(APIView):
 
 class PromotionCodeListCreateView(ListCreateAPIView):
     queryset = PromotionCode.objects.all()
-    permission_classes = [IsAuthenticated,IsAdminUser]
+    permission_classes = [IsAdminUser]
     serializer_class = PromotionCodeSerializer
+
 
 
 class PromotionCodeDetailView(RetrieveUpdateDestroyAPIView):
     queryset = PromotionCode.objects.all()
-    permission_classes = [IsAuthenticated,IsAdminUser]
+    permission_classes = [IsAdminUser]
     serializer_class = PromotionCodeSerializer
 
     def destroy(self,request,*args,**kwargs):

@@ -8,7 +8,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from order_tracking.serializers import OrderTrackingSerializer
 
+
 #for user
+
 class TrackOrderView(APIView):
     permission_class = [IsAuthenticated]
 
@@ -18,16 +20,20 @@ class TrackOrderView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
 #for admin
 class OrderTrackingDetailView(APIView):
     permission_classes = [IsAdminUser]
+
     def get(self, request, tracking_number):
         tracking = OrderTracking.objects.get(tracking_number=tracking_number)
         serializer = OrderTrackingSerializer(tracking)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+
 class UpdateOrderTrackingStatus(APIView):
     permission_classes = [IsAdminUser]
+
     def patch(self, request, tracking_number):
         tracking = OrderTracking.objects.get(tracking_number=tracking_number)
         serializer = OrderTrackingSerializer(tracking, data=request.data, partial=True)
