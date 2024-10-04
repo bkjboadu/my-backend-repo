@@ -130,6 +130,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware"
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -155,6 +156,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
+
+# if os.getenv("ENV") == "production":
+#     DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
+# else:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.postgresql",
+#             "NAME": config("DATABASE_NAME"),
+#             "USER": config("DATABASE_USER"),
+#             "PASSWORD": config("DATABASE_PASSWORD"),
+#             "HOST": config("DATABASE_HOST", default="localhost"),
+#             "PORT": config("DATABASE_PORT", default="5432"),
+#         }
+#     }
+
 ASGI_APPLICATION = "backend.asgi.application"
 
 if os.getenv("ENV") == "production":
@@ -169,9 +185,9 @@ else:
             "HOST": config("DATABASE_HOST", default="localhost"),
             "PORT": config("DATABASE_PORT", default="5432"),
         }
+
     }
-
-
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
