@@ -78,14 +78,14 @@ class UserOrderListView(generics.ListAPIView):
 
 # Admin: List all orders
 class AdminOrderListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
 
 # Update Order Status (Admin Only)
 class UpdateOrderStatusView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def post(self, request, order_id):
         order = get_object_or_404(Order, id=order_id)

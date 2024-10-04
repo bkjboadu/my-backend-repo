@@ -1,6 +1,6 @@
 from rest_framework.serializers import Serializer
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAdminUser,IsAuthenticated
+from rest_framework.permissions import IsAdminUser,IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -11,12 +11,12 @@ from .serializers import StoreSerializer,ProductSerializer,ProductVariantSeriali
 class StoreListCreateView(ListCreateAPIView):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
-    permission_classes = [IsAuthenticated,IsAdminUser]
+    permission_classes = [IsAdminUser]
 
 class StoreDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+    permission_classes =  [IsAdminUser]
 
     def destroy(self,request,*args,**kwargs):
         instance = self.get_object()
@@ -33,12 +33,16 @@ class StoreDetailView(RetrieveUpdateDestroyAPIView):
 class CategoryListCreateView(ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticatedOrReadOnly]
+        return [IsAdminUser]
 
 class CategoryDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+    permission_classes =  [IsAdminUser]
 
     def destroy(self,request,*args,**kwargs):
         instance = self.get_object()
@@ -54,12 +58,12 @@ class CategoryDetailView(RetrieveUpdateDestroyAPIView):
 class SupplierListCreateView(ListCreateAPIView):
     queryset = Supplier.objects.all()
     serializer_class = SupplierSerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+    permission_classes =  [IsAdminUser]
 
 class SupplierDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Supplier.objects.all()
     serializer_class = SupplierSerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+    permission_classes =  [IsAdminUser]
 
     def destroy(self,request,*args,**kwargs):
         instance = self.get_object()
@@ -75,12 +79,20 @@ class SupplierDetailView(RetrieveUpdateDestroyAPIView):
 class ProductListCreateView(ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticatedOrReadOnly]
+        return [IsAdminUser]
 
 class ProductDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticatedOrReadOnly]
+        return [IsAdminUser]
 
     def destroy(self,request,*args,**kwargs):
         instance = self.get_object()
@@ -92,18 +104,24 @@ class ProductDetailView(RetrieveUpdateDestroyAPIView):
             status= status.HTTP_200_OK
         )
 
-
-
 # Product Variant Views
 class ProductVariantListCreateView(ListCreateAPIView):
     queryset = ProductVariant.objects.all()
     serializer_class = ProductVariantSerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticatedOrReadOnly]
+        return [IsAdminUser]
 
 class ProductVariantDetailView(RetrieveUpdateDestroyAPIView):
     queryset = ProductVariant.objects.all()
     serializer_class = ProductVariantSerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [IsAuthenticatedOrReadOnly()]
+        return [IsAdminUser()]
 
     def destroy(self,request,*args,**kwargs):
         instance = self.get_object()
@@ -116,16 +134,20 @@ class ProductVariantDetailView(RetrieveUpdateDestroyAPIView):
         )
 
 
-# Product Image Views
 class ProductImageListCreateView(ListCreateAPIView):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [IsAuthenticatedOrReadOnly()]
+        return [IsAdminUser()]
+
 
 class ProductImageDetailView(RetrieveUpdateDestroyAPIView):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
-    permission_classes =  [IsAuthenticated,IsAdminUser]
+    permission_classes =  [IsAdminUser]
 
     def destroy(self,request,*args,**kwargs):
         instance = self.get_object()

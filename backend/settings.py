@@ -38,6 +38,10 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
+#stripe details
+
+STRIPE_PUBLISHABLE_KEY = "pk_live_51OY6ZUDpqLM13tAUXKnwnlHDs131u2qeJ7tPxMEmFTs9QPuytDjmIikrF3bmNbjDO3ynRLjPykxusu7X6TlVC7OS00gtUxjaNQ"
+STRIPE_SECRET_KEY = "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"
 # Application definition
 
 INSTALLED_APPS = [
@@ -66,6 +70,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.apple',
+    "payment"
+
 ]
 
 SITE_ID = 1
@@ -128,8 +134,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "backend.urls"
 AUTH_USER_MODEL = "user_management.CustomUser"
-CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOWED_ORIGINS = ['https://dropshop-frontend-de36abef2b64.herokuapp.com','http://localhost:8080', "http://localhost:5173"]
+CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
     {
@@ -148,6 +154,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
+
+ASGI_APPLICATION = "backend.asgi.application"
 
 if os.getenv("ENV") == "production":
     DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
