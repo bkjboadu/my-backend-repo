@@ -97,7 +97,11 @@ SOCIALACCOUNT_PROVIDERS = {
 GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
 
-LOGIN_REDIRECT_URL = 'http://localhost:8000/accounts/google/login/callback/'
+if os.getenv('ENV') == 'production':
+    LOGIN_REDIRECT_URL = 'https://dropshop-backend-1ee9a87b1bda.herokuapp.com/accounts/google/login/callback/'
+else:
+    LOGIN_REDIRECT_URL = 'http://localhost:8000/accounts/google/login/callback/'
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
