@@ -1,6 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
-import os
+import os, json
 from decouple import config
 from dotenv import load_dotenv
 import dj_database_url
@@ -93,17 +93,27 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Google Cloud Storage settings
-GS_BUCKET_NAME = ' dropshop-media-bucket'
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'config/credentials/dropshop-437621-518da68eb822.json')
-)
+if os.getenv('ENV') == 'production':
+    GS_BUCKET_NAME = 'dropshop-media-bucket'
 
-# Django-Storages settings for Google Cloud Storage
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-GS_FILE_OVERWRITE = False  # To avoid overwriting existing files
+    GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
 
-# Media files settings (use this if you're handling media files)
-MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
+
+    # Django-Storages settings for Google Cloud Storage
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_FILE_OVERWRITE = False  # To avoid overwriting existing files
+
+    # Media files settings (use this if you're handling media files)
+    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+
+    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+
+    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+else:
+    STATIC_URL = '/static/'
+
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 #Google OAuth settings
@@ -224,11 +234,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
