@@ -58,8 +58,8 @@ class CategoryListCreateView(ListCreateAPIView):
 
     def get_permissions(self):
         if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly]
-        return [IsAdminUser]
+            return [IsAuthenticatedOrReadOnly()]
+        return [IsAdminUser()]
 
 
 class CategoryDetailView(RetrieveUpdateDestroyAPIView):
@@ -104,8 +104,8 @@ class ProductListCreateView(ListCreateAPIView):
 
     def get_permissions(self):
         if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly]
-        return [IsAdminUser]
+            return [IsAuthenticatedOrReadOnly()]
+        return [IsAdminUser()]
 
 
 class ProductDetailView(RetrieveUpdateDestroyAPIView):
@@ -114,8 +114,8 @@ class ProductDetailView(RetrieveUpdateDestroyAPIView):
 
     def get_permissions(self):
         if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly]
-        return [IsAdminUser]
+            return [IsAuthenticatedOrReadOnly()]
+        return [IsAdminUser()]
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -133,8 +133,8 @@ class ProductVariantListCreateView(ListCreateAPIView):
 
     def get_permissions(self):
         if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly]
-        return [IsAdminUser]
+            return [IsAuthenticatedOrReadOnly()]
+        return [IsAdminUser()]
 
 
 class ProductVariantDetailView(RetrieveUpdateDestroyAPIView):
