@@ -4,6 +4,7 @@ import os
 from decouple import config
 from dotenv import load_dotenv
 import dj_database_url
+from google.oauth2 import service_account
 
 
 load_dotenv()
@@ -91,6 +92,21 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# Google Cloud Storage settings
+GS_BUCKET_NAME = ' dropshop-media-bucket'
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    os.path.join(BASE_DIR, 'config/credentials/dropshop-437621-518da68eb822.json')
+)
+
+# Django-Storages settings for Google Cloud Storage
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_FILE_OVERWRITE = False  # To avoid overwriting existing files
+
+# Media files settings (use this if you're handling media files)
+MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+
+
+#Google OAuth settings
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 
