@@ -93,30 +93,32 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Google Cloud Storage settings
-if os.getenv('ENV') == 'production':
-    GS_BUCKET_NAME = 'dropshop-media-bucket'
+if os.getenv("ENV") == "production":
+    GS_BUCKET_NAME = "dropshop-media-bucket"
 
-    GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
+    GS_CREDENTIALS_DICT = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
 
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+        GS_CREDENTIALS_DICT
+    )
 
     # Django-Storages settings for Google Cloud Storage
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     GS_FILE_OVERWRITE = False  # To avoid overwriting existing files
 
     # Media files settings (use this if you're handling media files)
-    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+    MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
 
-    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+    STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/static/"
 
-    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 else:
-    STATIC_URL = '/static/'
+    STATIC_URL = "/static/"
 
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
-#Google OAuth settings
+# Google OAuth settings
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 
@@ -141,7 +143,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -149,16 +151,14 @@ AUTH_USER_MODEL = "user_management.CustomUser"
 
 CORS_ALLOWED_ORIGINS = [
     "https://dropshop-frontend-de36abef2b64.herokuapp.com",
-    'https://dropshop-backend-1ee9a87b1bda.herokuapp.com',
+    "https://dropshop-backend-1ee9a87b1bda.herokuapp.com",
     "http://localhost:8080",
     "http://localhost:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://dropshop-backend-1ee9a87b1bda.herokuapp.com'
-]
+CSRF_TRUSTED_ORIGINS = ["https://dropshop-backend-1ee9a87b1bda.herokuapp.com"]
 
 TEMPLATES = [
     {
