@@ -302,3 +302,19 @@ class LogoutView(generics.GenericAPIView):
             {"message": "User has been logged out successfully."},
             status=status.HTTP_200_OK,
         )
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.core.files.storage import default_storage
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def upload_file(request):
+    if request.method == 'POST' and request.FILES['file']:
+        file = request.FILES['file']
+        file_name = default_storage.save(file.name, file)
+        file_url = default_storage.url(file_name)
+        return HttpResponse(f"File uploaded successfully: <a href='{file_url}'>View file</a>")
+
+    return HttpResponse('No file uploaded')
