@@ -47,6 +47,7 @@ class GoogleLoginView(View):
         )
         return redirect(google_login_url)
 
+
 # Google callback view for handling OAuth response
 class GoogleCallbackView(View):
     def get(self, request, *args, **kwargs):
@@ -81,6 +82,7 @@ class GoogleCallbackView(View):
         if created:
             user.first_name = idinfo.get('given_name', '')
             user.last_name = idinfo.get('family_name', '')
+            user.is_verified = True
             user.save()
 
 

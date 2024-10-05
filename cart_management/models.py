@@ -4,7 +4,7 @@ from inventory_management.models import Product
 from datetime import timedelta
 from django.utils import timezone
 
-# Promotional Code Model
+
 class PromotionCode(models.Model):
     code = models.CharField(max_length=20,unique=True)
     discount_percentage = models.DecimalField(max_digits=5,decimal_places=2, help_text = 'Discount percentage')
@@ -28,8 +28,6 @@ class PromotionCode(models.Model):
 
 
 
-
-# Cart Model
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True)
@@ -59,7 +57,7 @@ class Cart(models.Model):
     def __str__(self):
         return f"Cart of {self.user.first_name} (Active: {self.is_active})"
 
-# CartItem Model
+
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart,on_delete=models.CASCADE,related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
