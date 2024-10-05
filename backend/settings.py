@@ -94,24 +94,21 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # Google Cloud Storage settings
 if os.getenv("ENV") == "production":
-    GS_BUCKET_NAME = "dropshop-media-bucket"
+    GS_BUCKET_NAME = 'dropshop-media-bucket'
 
-    GS_CREDENTIALS_DICT = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-        GS_CREDENTIALS_DICT
-    )
+    GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
 
-    # Custom Media files storage
-    DEFAULT_FILE_STORAGE = "storages_backends.MediaStorage"
-    GS_FILE_OVERWRITE = False  # To avoid overwriting existing files
+    # Static files settings
+    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
-    # Media files settings (use this if you're handling media files)
-    MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
+    # Media files settings
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
 
-    # Custom Static files storage
-    STATICFILES_STORAGE = "storages_backends.StaticStorage"
+    GS_FILE_OVERWRITE = False  # Ensure files with the same name aren't overwritten
 
-    STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/static/"
 
 else:
     STATIC_URL = "/static/"
