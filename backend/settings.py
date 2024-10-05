@@ -1,4 +1,3 @@
-
 from datetime import timedelta
 from pathlib import Path
 import os
@@ -27,7 +26,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
-#stripe details
+# stripe details
 
 STRIPE_PUBLISHABLE_KEY = "pk_live_51OY6ZUDpqLM13tAUXKnwnlHDs131u2qeJ7tPxMEmFTs9QPuytDjmIikrF3bmNbjDO3ynRLjPykxusu7X6TlVC7OS00gtUxjaNQ"
 STRIPE_SECRET_KEY = "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"
@@ -53,23 +52,23 @@ INSTALLED_APPS = [
     "customer_support",
     "analytics",
     "payment",
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.apple',
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.facebook",
+    "allauth.socialaccount.providers.apple",
 ]
 
 SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'user_management.oauth.GoogleAuthBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "user_management.oauth.GoogleAuthBackend",
 ]
 
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 
 REST_FRAMEWORK = {
@@ -80,27 +79,25 @@ REST_FRAMEWORK = {
 
 # Google OAuth settings in Django
 SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'key': ''
-        },
-        'SCOPE': [
-            'profile',
-            'email',
+    "google": {
+        "APP": {"key": ""},
+        "SCOPE": [
+            "profile",
+            "email",
         ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
     }
 }
 
-GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 
-if os.getenv('ENV') == 'production':
-    LOGIN_REDIRECT_URL = 'https://dropshop-backend-1ee9a87b1bda.herokuapp.com/accounts/google/login/callback/'
+if os.getenv("ENV") == "production":
+    LOGIN_REDIRECT_URL = "https://dropshop-backend-1ee9a87b1bda.herokuapp.com/accounts/google/login/callback/"
 else:
-    LOGIN_REDIRECT_URL = 'http://localhost:8000/accounts/google/login/callback/'
+    LOGIN_REDIRECT_URL = "http://localhost:8000/accounts/google/login/callback/"
 
 
 SIMPLE_JWT = {
@@ -117,12 +114,16 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "allauth.account.middleware.AccountMiddleware"
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"
 AUTH_USER_MODEL = "user_management.CustomUser"
-CORS_ALLOWED_ORIGINS = ['https://dropshop-frontend-de36abef2b64.herokuapp.com','http://localhost:8080', "http://localhost:5173"]
+CORS_ALLOWED_ORIGINS = [
+    "https://dropshop-frontend-de36abef2b64.herokuapp.com",
+    "http://localhost:8080",
+    "http://localhost:5173",
+]
 CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
@@ -158,7 +159,6 @@ else:
             "PORT": config("DATABASE_PORT", default="5432"),
         }
     }
-
 
 
 # Password validation

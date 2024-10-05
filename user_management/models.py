@@ -10,7 +10,6 @@ from django.utils import timezone
 from uuid import UUID
 
 
-
 class CustomUserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 
@@ -71,8 +70,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-
-
 
 
 class BlacklistedToken(models.Model):

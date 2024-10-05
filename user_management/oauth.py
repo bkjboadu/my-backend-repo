@@ -6,6 +6,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from .models import CustomUser
 
+
 class GoogleAuthBackend(ModelBackend):
     def authenticate(self, request, google_id_token=None):
         """
@@ -16,10 +17,12 @@ class GoogleAuthBackend(ModelBackend):
 
         try:
             # Verify the token with Google
-            id_info = id_token.verify_oauth2_token(google_id_token, requests.Request(), settings.GOOGLE_CLIENT_ID)
+            id_info = id_token.verify_oauth2_token(
+                google_id_token, requests.Request(), settings.GOOGLE_CLIENT_ID
+            )
 
             # Check if the email is valid
-            email = id_info.get('email')
+            email = id_info.get("email")
             if not email:
                 return None
 
@@ -29,8 +32,8 @@ class GoogleAuthBackend(ModelBackend):
             except CustomUser.DoesNotExist:
                 user = CustomUser.objects.create_user(
                     email=email,
-                    first_name=id_info.get('given_name', ''),
-                    last_name=id_info.get('family_name', '')
+                    first_name=id_info.get("given_name", ""),
+                    last_name=id_info.get("family_name", ""),
                 )
 
             return user

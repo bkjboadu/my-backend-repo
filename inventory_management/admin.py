@@ -6,7 +6,7 @@ from .models import (
     ProductVariant,
     Supplier,
     StockEntry,
-    Store
+    Store,
 )
 
 admin.site.register(Category),
