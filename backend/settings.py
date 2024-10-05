@@ -97,26 +97,25 @@ if os.getenv("ENV") == "production":
     GS_BUCKET_NAME = "dropshop-media-bucket"
 
     GS_CREDENTIALS_DICT = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
-
     GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
         GS_CREDENTIALS_DICT
     )
 
-    # Django-Storages settings for Google Cloud Storage
-    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    # Custom Media files storage
+    DEFAULT_FILE_STORAGE = "storages_backends.MediaStorage"
     GS_FILE_OVERWRITE = False  # To avoid overwriting existing files
 
     # Media files settings (use this if you're handling media files)
     MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
 
+    # Custom Static files storage
+    STATICFILES_STORAGE = "storages_backends.StaticStorage"
+
     STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/static/"
 
-    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 else:
     STATIC_URL = "/static/"
-
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 
 # Google OAuth settings
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
