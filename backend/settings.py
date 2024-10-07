@@ -97,7 +97,9 @@ SOCIALACCOUNT_PROVIDERS = {
 if os.getenv("ENV") == "production":
     GS_BUCKET_NAME = 'dropshop-media-bucket'
 
+
     GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
+
     GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
 
     # Static files settings
@@ -108,9 +110,7 @@ if os.getenv("ENV") == "production":
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
 
-    GS_FILE_OVERWRITE = False  # Ensure files with the same name aren't overwritten
-
-
+    GS_FILE_OVERWRITE = False
 else:
     STATIC_URL = "/static/"
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -160,7 +160,7 @@ CSRF_TRUSTED_ORIGINS = ["https://dropshop-backend-1ee9a87b1bda.herokuapp.com"]
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR,'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
