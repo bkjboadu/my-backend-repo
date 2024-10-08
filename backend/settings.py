@@ -29,9 +29,13 @@ ALLOWED_HOSTS = ["*"]
 
 # stripe details
 
-STRIPE_PUBLISHABLE_KEY = "pk_live_51OY6ZUDpqLM13tAUXKnwnlHDs131u2qeJ7tPxMEmFTs9QPuytDjmIikrF3bmNbjDO3ynRLjPykxusu7X6TlVC7OS00gtUxjaNQ"
-STRIPE_SECRET_KEY = "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"
+# STRIPE_PUBLISHABLE_KEY = "pk_live_51OY6ZUDpqLM13tAUXKnwnlHDs131u2qeJ7tPxMEmFTs9QPuytDjmIikrF3bmNbjDO3ynRLjPykxusu7X6TlVC7OS00gtUxjaNQ"
+# STRIPE_SECRET_KEY = "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"
 # Application definition
+
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -177,21 +181,30 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 ASGI_APPLICATION = "backend.asgi.application"
 
-if os.getenv("ENV") == "production":
-    DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": config("DATABASE_NAME"),
-            "USER": config("DATABASE_USER"),
-            "PASSWORD": config("DATABASE_PASSWORD"),
-            "HOST": config("DATABASE_HOST", default="localhost"),
-            "PORT": config("DATABASE_PORT", default="5432"),
-        }
+# if os.getenv("ENV") == "production":
+#     DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
+# else:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.postgresql",
+#             "NAME": config("DATABASE_NAME"),
+#             "USER": config("DATABASE_USER"),
+#             "PASSWORD": config("DATABASE_PASSWORD"),
+#             "HOST": config("DATABASE_HOST", default="localhost"),
+#             "PORT": config("DATABASE_PORT", default="5432"),
+#         }
+#     }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dropshop_db',
+        'USER': 'postgres',
+        'PASSWORD': 'milly123',
+        'HOST': 'localhost',
+        'PORT': 5432
     }
-
-
+}
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 

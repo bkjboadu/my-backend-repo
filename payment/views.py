@@ -1,78 +1,144 @@
 import stripe, json
+import requests
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Order, StripePayment
+from rest_framework.views import APIView
+from .paystack import verify_payment
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+paystack_secret_key = settings.PAYSTACK_SECRET_KEY
 
 
-def create_stripe_payment_intent(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
+class StripePayment(APIView):
+    def create_stripe_payment_intent(request, order_id):
+        order = get_object_or_404(Order, id=order_id)
 
-    intent = stripe.PaymentIntent.create(
-        amount=int(order.total_amount * 100),
-        currency="cad",
-        payment_method_types=["card"],
-        description=f"Payment for Order {order_id}",
-    )
+        intent = stripe.PaymentIntent.create(
+            amount=int(order.total_amount * 100),
+            currency="cad",
+            payment_method_types=["card"],
+            description=f"Payment for Order {order_id}",
+        )
 
-    return JsonResponse({"client_secret": intent.client_secret, "order_id": order_id})
+        return JsonResponse({"client_secret": intent.client_secret, "order_id": order_id})
+
+class StripeConfirmPayment(APIView):
+    @csrf_exempt
+    def confirm_payment(request):
+        if request.method == "POST":
+            try:
+                # Check if JSON data is sent
+                if request.content_type == "application/json":
+                    data = json.loads(request.body)
+                else:
+                    data = request.POST
+
+                order_id = data.get("order_id")
+                payment_intent_id = data.get("payment_intent_id")
+
+                if not order_id or not payment_intent_id:
+                    return JsonResponse(
+                        {"message": "Missing order_id or payment_intent_id"}, status=400
+                    )
+
+                # Fetch the order and the payment intent details
+                order = get_object_or_404(Order, id=order_id)
+                intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+
+                if intent.status == "succeeded":
+                    # Payment was successful, update the order status
+                    StripePayment.objects.create(
+                        order=order,
+                        stripe_charge_id=intent.id,
+                        amount=intent.amount / 100,
+                        status="succeeded",
+                    )
+                    order.payment_status = "paid"
+                    order.save()
+                    return JsonResponse({"message": "Payment successful"}, status=200)
+
+                else:
+                    return JsonResponse(
+                        {
+                            "message": "Payment not completed",
+                            "payment_status": intent.status,
+                            "required_action": intent.next_action,  # Optional, if additional action needed
+                            "error_details": intent.last_payment_error,  # Optional, details of any error
+                        },
+                        status=400,
+                    )
+
+            except stripe.error.StripeError as e:
+                return JsonResponse({"message": f"Error: {str(e)}"}, status=500)
+
+            except json.JSONDecodeError:
+                return JsonResponse({"message": "Invalid JSON data"}, status=400)
+
+            except Exception as e:
+                return JsonResponse({"message": f"Unexpected error: {str(e)}"}, status=500)
+
+        return JsonResponse({"message": "Invalid request method"}, status=400)
 
 
-@csrf_exempt
-def confirm_payment(request):
-    if request.method == "POST":
+PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY
+
+headers = {
+    "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
+    "Content-Type": "application/json",
+}
+
+def initialize_transaction(email, amount):
+    url = 'https://api.paystack.co/transaction/initialize'
+    data = {
+        "email": email,
+        "amount": amount * 100, 
+        "payment_channel": ["mobile_money"] ,
+    }
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+
+class InitializePaystackPaymentView(APIView):
+
+    def post(self, request):
         try:
-            # Check if JSON data is sent
-            if request.content_type == "application/json":
-                data = json.loads(request.body)
+            user = request.user
+            order_id = request.data.get('order_id')
+            order = Order.objects.get(id=order_id, user=user)
+            amount = order.total_amount  
+            email = user.email
+
+            # Initialize transaction with Paystack
+            response = initialize_transaction(email, amount)
+
+            if response['status']:
+                return JsonResponse({'authorization_url': response['data']['authorization_url']})
             else:
-                data = request.POST
+                return JsonResponse({'error': 'Payment initialization failed'}, status=400)
 
-            order_id = data.get("order_id")
-            payment_intent_id = data.get("payment_intent_id")
-
-            if not order_id or not payment_intent_id:
-                return JsonResponse(
-                    {"message": "Missing order_id or payment_intent_id"}, status=400
-                )
-
-            # Fetch the order and the payment intent details
-            order = get_object_or_404(Order, id=order_id)
-            intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-
-            if intent.status == "succeeded":
-                # Payment was successful, update the order status
-                StripePayment.objects.create(
-                    order=order,
-                    stripe_charge_id=intent.id,
-                    amount=intent.amount / 100,
-                    status="succeeded",
-                )
-                order.payment_status = "paid"
-                order.save()
-                return JsonResponse({"message": "Payment successful"}, status=200)
-
-            else:
-                return JsonResponse(
-                    {
-                        "message": "Payment not completed",
-                        "payment_status": intent.status,
-                        "required_action": intent.next_action,  # Optional, if additional action needed
-                        "error_details": intent.last_payment_error,  # Optional, details of any error
-                    },
-                    status=400,
-                )
-
-        except stripe.error.StripeError as e:
-            return JsonResponse({"message": f"Error: {str(e)}"}, status=500)
-
-        except json.JSONDecodeError:
-            return JsonResponse({"message": "Invalid JSON data"}, status=400)
+        except Order.DoesNotExist:
+            return JsonResponse({'error': 'Order not found'}, status=404)
 
         except Exception as e:
-            return JsonResponse({"message": f"Unexpected error: {str(e)}"}, status=500)
+            return JsonResponse({'error': str(e)}, status=500)
 
-    return JsonResponse({"message": "Invalid request method"}, status=400)
+class VerifyPaymentView(APIView):
+    def post (self, request):
+        reference = request.data.get('reference')
+        response = verify_payment(reference)
+        if response.get('status'):
+            return JsonResponse({'message': 'Payment successful', 'data': response['data']})
+        else:
+            return JsonResponse({'error': 'Payment verification failed'}, status=400)
+        
+class PaymentCallBackView(APIView):
+    def get(self, request):
+        reference = request.GET.get('reference')  
+        
+        response = verify_payment(reference)
+        if response.get('status'):
+            return JsonResponse({'message': 'Payment completed', 'data': response['data']}, status=200)
+        else:
+            return JsonResponse({'error': 'Payment failed or incomplete'}, status=400)
