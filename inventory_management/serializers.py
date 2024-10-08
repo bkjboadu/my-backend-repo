@@ -11,17 +11,20 @@ from .models import (
 )
 
 
-# Store Serializer
-class StoreSerializer(ModelSerializer):
-    class Meta:
-        model = Store
-        fields = "__all__"
-
 
 # Category Serializer
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
+        fields = "__all__"
+
+
+# Store Serializer
+class StoreSerializer(ModelSerializer):
+    categories = CategorySerializer(many=True,read_only=True)
+
+    class Meta:
+        model = Store
         fields = "__all__"
 
 
