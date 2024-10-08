@@ -319,11 +319,12 @@ class LogoutView(generics.GenericAPIView):
 
 #         # Initialize Google Cloud client with credentials
 #         credentials = GS_CREDENTIALS
+#         print(credentials)
 #         client = storage.Client(credentials=credentials, project=credentials.project_id)
 #         bucket = client.get_bucket('dropshop-media-bucket')
 
 #         # Create a new blob and upload the file
-#         blob = bucket.blob(f'media/uploads/{file_name}')
+#         blob = bucket.blob(f'media/product_images/{file_name}')
 #         blob.upload_from_file(uploaded_file.file)
 
 #         return HttpResponse(f"File {file_name} uploaded successfully.")
