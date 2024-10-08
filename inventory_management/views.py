@@ -53,13 +53,16 @@ class StoreDetailView(RetrieveUpdateDestroyAPIView):
 
 # Category Views
 class CategoryListCreateView(ListCreateAPIView):
-    queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
     def get_permissions(self):
         if self.request.method == "GET":
             return [IsAuthenticatedOrReadOnly()]
         return [IsAdminUser()]
+
+    def get_queryset(self):
+        store_id = self.kwargs['store_id']
+        return Category.objects.filter(store_id=store_id)
 
 
 class CategoryDetailView(RetrieveUpdateDestroyAPIView):
