@@ -42,13 +42,7 @@ class GoogleAuthBackend(ModelBackend):
             # Token verification failed
             return None
 
-    def get_user(self, user_id):
-        """
-        Retrieve a user by their primary key.
-        """
-        try:
-            return CustomUser.objects.get(pk=user_id)
-=======
+  
 class GoogleAuthBackend(ModelBackend):
     def authenticate(self, request, id_token):
         try:
@@ -62,6 +56,5 @@ class GoogleAuthBackend(ModelBackend):
     def get_user(self, uuid):
         try:
             return CustomUser.objects.get(pk=uuid)
->>>>>>> dfef770fce7c57ddf1ff8777cca858f5be9cae57
         except CustomUser.DoesNotExist:
             return None

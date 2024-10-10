@@ -4,12 +4,11 @@ from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Order, StripePayment
+from .models import Order, StripePayment, PaystackPayment
 from rest_framework.views import APIView
-from .paystack import verify_payment
+from .paystack import verify_payment, initialize_transaction
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
-paystack_secret_key = settings.PAYSTACK_SECRET_KEY
 
 
 class StripePayment(APIView):
@@ -90,15 +89,6 @@ headers = {
     "Content-Type": "application/json",
 }
 
-def initialize_transaction(email, amount):
-    url = 'https://api.paystack.co/transaction/initialize'
-    data = {
-        "email": email,
-        "amount": amount * 100, 
-        "payment_channel": ["mobile_money"] ,
-    }
-    response = requests.post(url, headers=headers, json=data)
-    return response.json()
 
 class InitializePaystackPaymentView(APIView):
 
@@ -114,6 +104,14 @@ class InitializePaystackPaymentView(APIView):
             response = initialize_transaction(email, amount)
 
             if response['status']:
+                PaystackPayment.objects.create(
+                    order=order,
+                    amount=amount,
+                    reference=response['data']['reference'],
+                    statu='pending',
+                    email=email,
+                    access_code=response['data']['access_code'], 
+                )
                 return JsonResponse({'authorization_url': response['data']['authorization_url']})
             else:
                 return JsonResponse({'error': 'Payment initialization failed'}, status=400)
@@ -128,9 +126,20 @@ class VerifyPaymentView(APIView):
     def post (self, request):
         reference = request.data.get('reference')
         response = verify_payment(reference)
+
         if response.get('status'):
+            payment=get_object_or_404(PaystackPayment, reference=reference)
+            payment.status='success'
+            payment.save()
+
+            payment.order.payment_status='paid'
+            payment.order.save()
             return JsonResponse({'message': 'Payment successful', 'data': response['data']})
         else:
+            payment=get_object_or_404(PaystackPayment,reference=reference)
+            payment.status='failed'
+            payment.save()
+            
             return JsonResponse({'error': 'Payment verification failed'}, status=400)
         
 class PaymentCallBackView(APIView):
