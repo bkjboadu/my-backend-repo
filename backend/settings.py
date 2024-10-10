@@ -39,6 +39,7 @@ PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
+    "django.contrib.sites",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -56,6 +57,29 @@ INSTALLED_APPS = [
     "notifications",
     "customer_support",
     "analytics",
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.apple',
+    "payment"
+
+]
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend', 
+    'allauth.account.auth_backends.AuthenticationBackend', 
+]
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'  
+ACCOUNT_AUTHENTICATION_METHOD = 'email' 
+ACCOUNT_EMAIL_REQUIRED = True  
+
+# LOGIN_REDIRECT_URL = '/'
+
     "payment",
     "allauth",
     "allauth.account",
@@ -129,6 +153,74 @@ else:
     LOGIN_REDIRECT_URL = "http://localhost:8000/accounts/google/login/callback/"
 
 
+# Google OAuth settings in Django
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {"key": ""},
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+    }
+}
+
+# Google Cloud Storage settings
+if os.getenv("ENV") == "production":
+    GS_BUCKET_NAME = 'dropshop-media-bucket'
+
+    GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
+
+    # Static files settings
+    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+
+    # Media files settings
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+
+    GS_FILE_OVERWRITE = False  # Ensure files with the same name aren't overwritten
+
+
+else:
+    STATIC_URL = "/static/"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Google OAuth settings
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+
+if os.getenv("ENV") == "production":
+    LOGIN_REDIRECT_URL = "https://dropshop-backend-1ee9a87b1bda.herokuapp.com/accounts/google/login/callback/"
+else:
+    LOGIN_REDIRECT_URL = "http://localhost:8000/accounts/google/login/callback/"
+
+
+# Google OAuth settings in Django
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
+
+LOGIN_REDIRECT_URL = 'http://localhost:8000/accounts/google/login/callback/'
+ 
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -145,6 +237,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "allauth.account.middleware.AccountMiddleware"
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -178,6 +271,21 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
+
+
+# if os.getenv("ENV") == "production":
+#     DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
+# else:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.postgresql",
+#             "NAME": config("DATABASE_NAME"),
+#             "USER": config("DATABASE_USER"),
+#             "PASSWORD": config("DATABASE_PASSWORD"),
+#             "HOST": config("DATABASE_HOST", default="localhost"),
+#             "PORT": config("DATABASE_PORT", default="5432"),
+#         }
+#     }
 
 ASGI_APPLICATION = "backend.asgi.application"
 
