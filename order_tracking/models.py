@@ -1,6 +1,7 @@
 from django.db import models
 from order_management.models import Order
 
+
 class OrderTracking(models.Model):
     STATUS_CHOICES = [
 

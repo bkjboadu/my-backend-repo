@@ -5,3 +5,4 @@ __pycache__/
 send_email.py
 /env/
 /myvenv/
+/backend/config/

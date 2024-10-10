@@ -4,11 +4,13 @@ from inventory_management.models import Product
 from datetime import timedelta
 from django.utils import timezone
 
-# Promotional Code Model
+
 class PromotionCode(models.Model):
-    code = models.CharField(max_length=20,unique=True)
-    discount_percentage = models.DecimalField(max_digits=5,decimal_places=2, help_text = 'Discount percentage')
-    expiration_date = models.DateTimeField(null=True,blank=True)
+    code = models.CharField(max_length=20, unique=True)
+    discount_percentage = models.DecimalField(
+        max_digits=5, decimal_places=2, help_text="Discount percentage"
+    )
+    expiration_date = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -21,31 +23,33 @@ class PromotionCode(models.Model):
             return False
         return True
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         if not self.expiration_date:
             self.expiration_date = self.created_at + timedelta(hours=72)
-        super().save(*args,**kwargs)
+        super().save(*args, **kwargs)
 
 
-
-
-# Cart Model
 class Cart(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add = True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
-    promotion_code = models.ForeignKey(PromotionCode, on_delete = models.SET_NULL,null=True,blank=True,related_name='carts')
-    expires_at = models.DateTimeField(null=True,blank=True)
+    promotion_code = models.ForeignKey(
+        PromotionCode,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="carts",
+    )
+    expires_at = models.DateTimeField(null=True, blank=True)
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         # if not self.pk:
-        super().save(*args,**kwargs)
+        super().save(*args, **kwargs)
 
         if not self.expires_at:
             self.expires_at = self.created_at + timedelta(hours=24)
-            super().save(update_fields=['expires_at'])
-
+            super().save(update_fields=["expires_at"])
 
     def has_expired(self):
         if self.expires_at and timezone.now() > self.expires_at:
@@ -54,22 +58,20 @@ class Cart(models.Model):
             return True
         return False
 
-
-
     def __str__(self):
         return f"Cart of {self.user.first_name} (Active: {self.is_active})"
 
-# CartItem Model
+
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart,on_delete=models.CASCADE,related_name='items')
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    price_at_addition = models.DecimalField(max_digits=10,decimal_places=2)
+    price_at_addition = models.DecimalField(max_digits=10, decimal_places=2)
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         if not self.pk:
             self.price_at_addition = self.product.price
-        super().save(*args,**kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name} in cart {self.cart.id}"
@@ -81,8 +83,10 @@ class CartItem(models.Model):
 
 # Wishlist Model
 class Wishlist(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='wishlist')
-    product = models.ForeignKey(Product,on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wishlist"
+    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
