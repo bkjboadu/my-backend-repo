@@ -22,5 +22,8 @@ urlpatterns = [
     path("delete_account/", DeleteAccount.as_view(), name="delete"),
     path("activate/<token>/", Activate.as_view(), name="activate"),
     path("logout/", LogoutView.as_view(), name="logout"),
-    path("upload/",upload_file, name="upload"), # testing google cloud storage setup
+
+     # testing google cloud storage setup
+    # path("upload-file/",upload_file, name="upload_file"),
+    # path('view-image/',view_image, name='view_file'),
 ]

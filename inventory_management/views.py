@@ -53,19 +53,28 @@ class StoreDetailView(RetrieveUpdateDestroyAPIView):
 
 # Category Views
 class CategoryListCreateView(ListCreateAPIView):
-    queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
     def get_permissions(self):
-        if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly()]
-        return [IsAdminUser()]
+        if self.request.method == "POST":
+            return [IsAdminUser()]
+        return []
+
+    def get_queryset(self):
+        store_id = self.kwargs['store_id']
+        return Category.objects.filter(store_id=store_id)
 
 
 class CategoryDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT','PATCH','DELETE']:
+            return [IsAdminUser()]
+        return []
+
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -103,9 +112,9 @@ class ProductListCreateView(ListCreateAPIView):
     serializer_class = ProductSerializer
 
     def get_permissions(self):
-        if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly()]
-        return [IsAdminUser()]
+        if self.request.method == "POST":
+            return [IsAdminUser()]
+        return []
 
 
 class ProductDetailView(RetrieveUpdateDestroyAPIView):
@@ -113,9 +122,9 @@ class ProductDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
 
     def get_permissions(self):
-        if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly()]
-        return [IsAdminUser()]
+        if self.request.method in ["PUT", "PATCH", "DELETE"]:
+            return [IsAdminUser()]
+        return []
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -132,9 +141,9 @@ class ProductVariantListCreateView(ListCreateAPIView):
     serializer_class = ProductVariantSerializer
 
     def get_permissions(self):
-        if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly()]
-        return [IsAdminUser()]
+        if self.request.method == "POST":
+            return [IsAdminUser()]
+        return []
 
 
 class ProductVariantDetailView(RetrieveUpdateDestroyAPIView):
@@ -142,9 +151,9 @@ class ProductVariantDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = ProductVariantSerializer
 
     def get_permissions(self):
-        if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly()]
-        return [IsAdminUser()]
+        if self.request.method == "POST":
+            return [IsAdminUser()]
+        return []
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -162,9 +171,9 @@ class ProductImageListCreateView(ListCreateAPIView):
     serializer_class = ProductImageSerializer
 
     def get_permissions(self):
-        if self.request.method == "GET":
-            return [IsAuthenticatedOrReadOnly()]
-        return [IsAdminUser()]
+        if self.request.method == "POST":
+            return [IsAdminUser()]
+        return []
 
 
 class ProductImageDetailView(RetrieveUpdateDestroyAPIView):
@@ -210,7 +219,11 @@ class StockEntryDetailView(RetrieveUpdateDestroyAPIView):
 class ProductReviewListCreateView(ListCreateAPIView):
     queryset = ProductReview.objects.all()
     serializer_class = ProductReviewSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated()]
+        return []
 
     def get_queryset(self):
         product_id = self.kwargs["product_id"]
@@ -227,7 +240,11 @@ class ProductReviewListCreateView(ListCreateAPIView):
 class ProductReviewDetailView(RetrieveUpdateDestroyAPIView):
     queryset = ProductReview.objects.all()
     serializer_class = ProductReviewSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method in ["PUT", "PATCH", "DELETE"]:
+            return [IsAuthenticated()]
+        return []
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

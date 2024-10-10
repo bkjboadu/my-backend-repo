@@ -15,9 +15,6 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-npk$04xkar&&(=200v(+m)o05zz$!f^^2fl@7u@@v5%2*x)_n="
 
@@ -58,14 +55,14 @@ INSTALLED_APPS = [
     "customer_support",
     "analytics",
     'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.apple',
     "payment"
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.facebook",
+    "allauth.socialaccount.providers.apple",
+    "storages",
 
-]
 
 SITE_ID = 1
 
@@ -78,29 +75,6 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_AUTHENTICATION_METHOD = 'email' 
 ACCOUNT_EMAIL_REQUIRED = True  
 
-# LOGIN_REDIRECT_URL = '/'
-
-    "payment",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
-    "allauth.socialaccount.providers.facebook",
-    "allauth.socialaccount.providers.apple",
-    "storages",
-]
-
-SITE_ID = 1
-
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "user_management.oauth.GoogleAuthBackend",
-]
-
-ACCOUNT_EMAIL_VERIFICATION = "none"
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED = True
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -109,98 +83,7 @@ REST_FRAMEWORK = {
 
 # Google OAuth settings in Django
 SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "APP": {"key": ""},
-        "SCOPE": [
-            "profile",
-            "email",
-        ],
-        "AUTH_PARAMS": {
-            "access_type": "online",
-        },
-    }
-}
 
-# Google Cloud Storage settings
-if os.getenv("ENV") == "production":
-    GS_BUCKET_NAME = 'dropshop-media-bucket'
-
-    GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
-
-    # Static files settings
-    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-
-    # Media files settings
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
-
-    GS_FILE_OVERWRITE = False  # Ensure files with the same name aren't overwritten
-
-
-else:
-    STATIC_URL = "/static/"
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# Google OAuth settings
-GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
-
-if os.getenv("ENV") == "production":
-    LOGIN_REDIRECT_URL = "https://dropshop-backend-1ee9a87b1bda.herokuapp.com/accounts/google/login/callback/"
-else:
-    LOGIN_REDIRECT_URL = "http://localhost:8000/accounts/google/login/callback/"
-
-
-# Google OAuth settings in Django
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "APP": {"key": ""},
-        "SCOPE": [
-            "profile",
-            "email",
-        ],
-        "AUTH_PARAMS": {
-            "access_type": "online",
-        },
-    }
-}
-
-# Google Cloud Storage settings
-if os.getenv("ENV") == "production":
-    GS_BUCKET_NAME = 'dropshop-media-bucket'
-
-    GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
-
-    # Static files settings
-    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-
-    # Media files settings
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
-
-    GS_FILE_OVERWRITE = False  # Ensure files with the same name aren't overwritten
-
-
-else:
-    STATIC_URL = "/static/"
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# Google OAuth settings
-GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
-
-if os.getenv("ENV") == "production":
-    LOGIN_REDIRECT_URL = "https://dropshop-backend-1ee9a87b1bda.herokuapp.com/accounts/google/login/callback/"
-else:
-    LOGIN_REDIRECT_URL = "http://localhost:8000/accounts/google/login/callback/"
-
-
-# Google OAuth settings in Django
-SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
             'key': ''
@@ -209,17 +92,46 @@ SOCIALACCOUNT_PROVIDERS = {
             'profile',
             'email',
         ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
     }
 }
 
-GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
 
-LOGIN_REDIRECT_URL = 'http://localhost:8000/accounts/google/login/callback/'
- 
+# Google Cloud Storage settings
+if os.getenv("ENV") == "production":
+    GS_BUCKET_NAME = 'dropshop-media-bucket'
+
+
+    GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
+
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
+
+    # Static files settings
+    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+
+    # Media files settings
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+
+    GS_FILE_OVERWRITE = False
+else:
+
+    STATIC_URL = "/static/"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+# Google OAuth settings
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+
+if os.getenv("ENV") == "production":
+    LOGIN_REDIRECT_URL = "https://dropshop-backend-1ee9a87b1bda.herokuapp.com/accounts/google/login/callback/"
+else:
+    LOGIN_REDIRECT_URL = "http://localhost:8000/accounts/google/login/callback/"
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -235,9 +147,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware"
     "allauth.account.middleware.AccountMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "allauth.account.middleware.AccountMiddleware"
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -257,7 +169,7 @@ CSRF_TRUSTED_ORIGINS = ["https://dropshop-backend-1ee9a87b1bda.herokuapp.com"]
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR,'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -271,48 +183,21 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
-
-
-# if os.getenv("ENV") == "production":
-#     DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
-# else:
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.postgresql",
-#             "NAME": config("DATABASE_NAME"),
-#             "USER": config("DATABASE_USER"),
-#             "PASSWORD": config("DATABASE_PASSWORD"),
-#             "HOST": config("DATABASE_HOST", default="localhost"),
-#             "PORT": config("DATABASE_PORT", default="5432"),
-#         }
-#     }
-
 ASGI_APPLICATION = "backend.asgi.application"
 
-# if os.getenv("ENV") == "production":
-#     DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
-# else:
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.postgresql",
-#             "NAME": config("DATABASE_NAME"),
-#             "USER": config("DATABASE_USER"),
-#             "PASSWORD": config("DATABASE_PASSWORD"),
-#             "HOST": config("DATABASE_HOST", default="localhost"),
-#             "PORT": config("DATABASE_PORT", default="5432"),
-#         }
-#     }
+if os.getenv("ENV") == "production":
+    DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": config("DATABASE_NAME"),
+            "USER": config("DATABASE_USER"),
+            "PASSWORD": config("DATABASE_PASSWORD"),
+            "HOST": config("DATABASE_HOST", default="localhost"),
+            "PORT": config("DATABASE_PORT", default="5432"),
+        }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dropshop_db',
-        'USER': 'postgres',
-        'PASSWORD': 'milly123',
-        'HOST': 'localhost',
-        'PORT': 5432
-    }
-}
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -346,11 +231,11 @@ USE_TZ = True
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static"),
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "staticfiles"),
+]
 
 
 # Static files (CSS, JavaScript, Images)

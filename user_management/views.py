@@ -3,8 +3,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-import logging, jwt, asyncio
-
+import logging, jwt, asyncio, os
 from user_management.oauth import GoogleAuthBackend
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
@@ -314,18 +313,45 @@ class LogoutView(generics.GenericAPIView):
             status=status.HTTP_200_OK,
         )
 
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.core.files.storage import default_storage
+# from django.shortcuts import render
+# from django.http import HttpResponse
+# from django.core.files.storage import default_storage
+# from google.cloud import storage
+# from django.views.decorators.csrf import csrf_exempt
+# from django.conf import settings
 
-from django.views.decorators.csrf import csrf_exempt
+# @csrf_exempt
+# def upload_file(request):
+#     if request.method == 'POST' and request.FILES.get('file'):
+#         # Get the uploaded file from the request
+#         uploaded_file = request.FILES['file']
+#         file_name = uploaded_file.name
 
-@csrf_exempt
-def upload_file(request):
-    if request.method == 'POST' and request.FILES['file']:
-        file = request.FILES['file']
-        file_name = default_storage.save(file.name, file)
-        file_url = default_storage.url(file_name)
-        return HttpResponse(f"File uploaded successfully: <a href='{file_url}'>View file</a>")
+#         # Initialize Google Cloud client with credentials
+#         credentials = GS_CREDENTIALS
+#         print(credentials)
+#         client = storage.Client(credentials=credentials, project=credentials.project_id)
+#         bucket = client.get_bucket('dropshop-media-bucket')
 
-    return HttpResponse('No file uploaded')
+#         # Create a new blob and upload the file
+#         blob = bucket.blob(f'media/product_images/{file_name}')
+#         blob.upload_from_file(uploaded_file.file)
+
+#         return HttpResponse(f"File {file_name} uploaded successfully.")
+#     else:
+#         return render(request, 'upload.html')
+
+
+# def view_image(request):
+#     # Use the credentials loaded from your settings
+#     print(GS_CREDENTIALS)
+#     credentials = GS_CREDENTIALS
+#     client = storage.Client(credentials=credentials, project=credentials.project_id)
+#     bucket = client.get_bucket('dropshop-media-bucket')
+#     blob = bucket.blob('media/product_images/airpods_2.jpeg')  # The full path to your image
+
+#     # Download the image content as bytes
+#     image_content = blob.download_as_bytes()
+
+#     # Return the image as an HTTP response
+#     return HttpResponse(image_content, content_type='image/jpeg')

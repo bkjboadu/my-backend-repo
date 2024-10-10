@@ -6,7 +6,6 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from .models import CustomUser
 
-<<<<<<< HEAD
 
 class GoogleAuthBackend(ModelBackend):
     def authenticate(self, request, google_id_token=None):
