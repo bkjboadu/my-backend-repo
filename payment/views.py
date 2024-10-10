@@ -6,10 +6,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Order, StripePayment
 from rest_framework.views import APIView
-from .paystack import verify_payment
+from .paystack import verify_payment, initialize_transaction
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
-paystack_secret_key = settings.PAYSTACK_SECRET_KEY
 
 
 class StripePayment(APIView):
@@ -90,15 +89,6 @@ headers = {
     "Content-Type": "application/json",
 }
 
-def initialize_transaction(email, amount):
-    url = 'https://api.paystack.co/transaction/initialize'
-    data = {
-        "email": email,
-        "amount": amount * 100, 
-        "payment_channel": ["mobile_money"] ,
-    }
-    response = requests.post(url, headers=headers, json=data)
-    return response.json()
 
 class InitializePaystackPaymentView(APIView):
 
