@@ -1136,6 +1136,22 @@ files = [
 ]
 
 [[package]]
+name = "paypalrestsdk"
+version = "1.13.3"
+description = "Deprecated"
+optional = false
+python-versions = "*"
+files = [
+    {file = "paypalrestsdk-1.13.3-py3-none-any.whl", hash = "sha256:a3f51616ee8f6d975a5a5a8c2049db63653c843479c8fdd71c9d588a31e14560"},
+    {file = "paypalrestsdk-1.13.3.tar.gz", hash = "sha256:dac236492a9ac1260a760014a2e56ab38b09d8143295b5e896545359b61fedd6"},
+]
+
+[package.dependencies]
+pyopenssl = ">=0.15"
+requests = ">=1.0.0"
+six = ">=1.0.0"
+
+[[package]]
 name = "pillow"
 version = "10.4.0"
 description = "Python Imaging Library (Fork)"
@@ -1442,6 +1458,24 @@ docs = ["sphinx", "sphinx-rtd-theme", "zope.interface"]
 tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
+name = "pyopenssl"
+version = "24.2.1"
+description = "Python wrapper module around the OpenSSL library"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pyOpenSSL-24.2.1-py3-none-any.whl", hash = "sha256:967d5719b12b243588573f39b0c677637145c7a1ffedcd495a487e58177fbb8d"},
+    {file = "pyopenssl-24.2.1.tar.gz", hash = "sha256:4247f0dbe3748d560dcbb2ff3ea01af0f9a1a001ef5f7c4c647956ed8cbf0e95"},
+]
+
+[package.dependencies]
+cryptography = ">=41.0.5,<44"
+
+[package.extras]
+docs = ["sphinx (!=5.2.0,!=5.2.0.post0,!=7.2.5)", "sphinx-rtd-theme"]
+test = ["pretend", "pytest (>=3.0.1)", "pytest-rerunfailures"]
+
+[[package]]
 name = "pyparsing"
 version = "3.1.4"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
@@ -1558,6 +1592,17 @@ files = [
 [package.dependencies]
 python-http-client = ">=3.2.1"
 starkbank-ecdsa = ">=2.0.1"
+
+[[package]]
+name = "six"
+version = "1.16.0"
+description = "Python 2 and 3 compatibility utilities"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+files = [
+    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
+    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
+]
 
 [[package]]
 name = "sqlparse"
@@ -1778,4 +1823,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "851fd6c00933804da50aecbb62448c6548c8e0c27a31e9332c35e9002f603f9c"
+content-hash = "e54c2f53b977b459cf9ee6bacfd6c71d3ffe558cd0d07c9796aa1d0a67ff9122"

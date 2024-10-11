@@ -4,8 +4,11 @@ from . import views
 urlpatterns = [
     path(
         "stripe-create-payment-intent/<int:order_id>/",
-        views.create_stripe_payment_intent,
-        name="create-stripe-payment-intent",
+        views.StripePaymentIntentView.as_view(),
+        name="stripe-payment-intent",
     ),
-    path("stripe-confirm-payment/", views.confirm_payment, name="confirm-payment"),
+    path("stripe-confirm-payment/", views.StripePaymentConfirmView, name="stripe-payment-success"),
+    path('paypal-payment/<int:order_id>/', views.PayPalPaymentView.as_view(), name='paypal-payment'),
+    path('paypal-payment-success/', views.PaypalPaymentSuccessView.as_view(), name='paypal-payment-success'),
+    path('paypal-payment-error/', views.PaymentErrorView.as_view(), name='paypal-payment-error'),
 ]

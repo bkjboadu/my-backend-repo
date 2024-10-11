@@ -32,6 +32,7 @@ whitenoise = "^6.7.0"
 cryptography = "^43.0.1"
 django-storages = "^1.14.4"
 google-cloud-storage = "^2.18.2"
+paypalrestsdk = "^1.13.3"
 
 
 [build-system]
