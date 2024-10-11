@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 import logging, jwt, asyncio, os
-
 from user_management.oauth import GoogleAuthBackend
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
@@ -91,6 +90,7 @@ class UserSignupView(generics.GenericAPIView):
     serializer_class = UserSerializer
 
     def post(self, request, *args, **kwargs):
+<<<<<<< HEAD
         if request.data.get("method") == "google":
             id_token = request.data.get("id_token")
             backend = GoogleAuthBackend()
@@ -101,6 +101,16 @@ class UserSignupView(generics.GenericAPIView):
                 return Response(
                     {"message": "Failed to log in with Google."}, status=400
                 )
+=======
+        if request.data.get('method') == 'google':
+            id_token = request.data.get('id_token')
+            backend = GoogleAuthBackend()
+            user = backend.authenticate(request, id_token=id_token)
+            if user:
+                return Response({'message': 'Logged in with Google successfully.'})
+            else:
+                return Response({'message': 'Failed to log in with Google.'}, status=400)
+>>>>>>> dfef770fce7c57ddf1ff8777cca858f5be9cae57
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

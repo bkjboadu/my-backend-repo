@@ -35,10 +35,14 @@ PAYPAL_MODE = os.getenv('PAYPAL_MODE')
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
 
-# Application definition
+# paystack details
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
+
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
+    "django.contrib.sites",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -56,8 +60,8 @@ INSTALLED_APPS = [
     "notifications",
     "customer_support",
     "analytics",
-    "payment",
-    "allauth",
+    'allauth',
+    "payment"
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
@@ -69,12 +73,12 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "user_management.oauth.GoogleAuthBackend",
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-ACCOUNT_EMAIL_VERIFICATION = "none"
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 
 REST_FRAMEWORK = {
@@ -85,17 +89,21 @@ REST_FRAMEWORK = {
 
 # Google OAuth settings in Django
 SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "APP": {"key": ""},
-        "SCOPE": [
-            "profile",
-            "email",
+
+    'google': {
+        'APP': {
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
         ],
         "AUTH_PARAMS": {
             "access_type": "online",
         },
     }
 }
+
 
 # Google Cloud Storage settings
 if os.getenv("ENV") == "production":
@@ -145,6 +153,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware"
     "allauth.account.middleware.AccountMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
@@ -180,7 +189,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
-
 ASGI_APPLICATION = "backend.asgi.application"
 
 if os.getenv("ENV") == "production":
@@ -196,7 +204,6 @@ else:
             "PORT": config("DATABASE_PORT", default="5432"),
         }
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
