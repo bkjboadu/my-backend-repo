@@ -35,6 +35,9 @@ PAYPAL_MODE = os.getenv('PAYPAL_MODE')
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
 
+# paystack
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -98,25 +101,21 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Google Cloud Storage settings
-if os.getenv("ENV") == "production":
-    GS_BUCKET_NAME = 'dropshop-media-bucket'
-    GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
+GS_BUCKET_NAME = 'dropshop-media-bucket'
+GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
 
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
 
-    # Static files settings
-    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
 
-    # Media files settings
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+# Static files settings
+STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
-    GS_FILE_OVERWRITE = False
-else:
+# Media files settings
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
 
-    STATIC_URL = "/static/"
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+GS_FILE_OVERWRITE = False
 
 
 # Google OAuth settings
