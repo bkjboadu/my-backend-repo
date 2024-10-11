@@ -82,7 +82,16 @@ class GoogleCallbackView(View):
 
         # Log in the user
         login(request, user, backend="user_management.oauth.GoogleAuthBackend")
-        return JsonResponse({"message": "Google login successful"})
+        # return JsonResponse({"message": "Google login successful"})
+        response_data = {
+            "access_token": token_json["access_token"],
+            "expires_in": token_json.get("expires_in"),
+            "token_type": token_json.get("token_type"),
+        }
+
+        if 'refresh_token' in token_json:
+            response_data['refresh_token'] = token_json['refresh_token']
+        return JsonResponse(response_data)
 
 
 class UserSignupView(generics.GenericAPIView):
@@ -299,46 +308,3 @@ class LogoutView(generics.GenericAPIView):
             {"message": "User has been logged out successfully."},
             status=status.HTTP_200_OK,
         )
-
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# from django.core.files.storage import default_storage
-# from google.cloud import storage
-# from django.views.decorators.csrf import csrf_exempt
-# from django.conf import settings
-
-# @csrf_exempt
-# def upload_file(request):
-#     if request.method == 'POST' and request.FILES.get('file'):
-#         # Get the uploaded file from the request
-#         uploaded_file = request.FILES['file']
-#         file_name = uploaded_file.name
-
-#         # Initialize Google Cloud client with credentials
-#         credentials = GS_CREDENTIALS
-#         print(credentials)
-#         client = storage.Client(credentials=credentials, project=credentials.project_id)
-#         bucket = client.get_bucket('dropshop-media-bucket')
-
-#         # Create a new blob and upload the file
-#         blob = bucket.blob(f'media/product_images/{file_name}')
-#         blob.upload_from_file(uploaded_file.file)
-
-#         return HttpResponse(f"File {file_name} uploaded successfully.")
-#     else:
-#         return render(request, 'upload.html')
-
-
-# def view_image(request):
-#     # Use the credentials loaded from your settings
-#     print(GS_CREDENTIALS)
-#     credentials = GS_CREDENTIALS
-#     client = storage.Client(credentials=credentials, project=credentials.project_id)
-#     bucket = client.get_bucket('dropshop-media-bucket')
-#     blob = bucket.blob('media/product_images/airpods_2.jpeg')  # The full path to your image
-
-#     # Download the image content as bytes
-#     image_content = blob.download_as_bytes()
-
-#     # Return the image as an HTTP response
-#     return HttpResponse(image_content, content_type='image/jpeg')
