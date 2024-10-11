@@ -64,6 +64,7 @@ class GoogleCallbackView(View):
         token_response = requests.post(token_url, data=data)
         token_json = token_response.json()
 
+        access_token = token_json.get("access_token")
         if "id_token" not in token_json:
             return JsonResponse({"error": "Failed to retrieve token"}, status=400)
 
@@ -71,6 +72,12 @@ class GoogleCallbackView(View):
         idinfo = id_token.verify_oauth2_token(
             token_json["id_token"], google_requests.Request(), GOOGLE_OAUTH_CLIENT_ID
         )
+
+         # Fetch user info from Google
+        user_info_url = "https://www.googleapis.com/oauth2/v3/userinfo"
+        headers = {"Authorization": f"Bearer {access_token}"}
+        user_info_response = requests.get(user_info_url, headers=headers)
+        user_info = user_info_response.json()
 
         # Get or create user
         user, created = CustomUser.objects.get_or_create(email=idinfo["email"])
@@ -87,6 +94,7 @@ class GoogleCallbackView(View):
             "access_token": token_json["access_token"],
             "expires_in": token_json.get("expires_in"),
             "token_type": token_json.get("token_type"),
+            "user": user_info
         }
 
         if 'refresh_token' in token_json:
