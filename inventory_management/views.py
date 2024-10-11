@@ -179,7 +179,11 @@ class ProductImageListCreateView(ListCreateAPIView):
 class ProductImageDetailView(RetrieveUpdateDestroyAPIView):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
-    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAdminUser()]
+        return []
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
