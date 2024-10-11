@@ -3,13 +3,14 @@ import requests
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404,redirect
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt, method_decorator
+from django.utils.decorators import method_decorator
 from .models import Order, StripePayment,PayPalPayment
+from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from django.views.generic import View
 from paypalrestsdk import Payment
 from rest_framework.views import APIView
-from .paystack import verify_payment
+# from .paystack import verify_payment
 
 
 # stripe payment setup
@@ -149,57 +150,57 @@ class PayPalPaymentErrorView(View):
 
 
 # Paystack
-PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY
-headers = {
-    "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
-    "Content-Type": "application/json",
-}
+# PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY
+# headers = {
+#     "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
+#     "Content-Type": "application/json",
+# }
 
-def initialize_transaction(email, amount):
-    url = 'https://api.paystack.co/transaction/initialize'
-    data = {
-        "email": email,
-        "amount": amount * 100,
-        "payment_channel": ["mobile_money"] ,
-    }
-    response = requests.post(url, headers=headers, json=data)
-    return response.json()
+# def initialize_transaction(email, amount):
+#     url = 'https://api.paystack.co/transaction/initialize'
+#     data = {
+#         "email": email,
+#         "amount": amount * 100,
+#         "payment_channel": ["mobile_money"] ,
+#     }
+#     response = requests.post(url, headers=headers, json=data)
+#     return response.json()
 
-class InitializePaystackPaymentView(APIView):
-    def post(self, request):
-        try:
-            user = request.user
-            order_id = request.data.get('order_id')
-            order = Order.objects.get(id=order_id, user=user)
-            amount = order.total_amount
-            email = user.email
+# class InitializePaystackPaymentView(APIView):
+#     def post(self, request):
+#         try:
+#             user = request.user
+#             order_id = request.data.get('order_id')
+#             order = Order.objects.get(id=order_id, user=user)
+#             amount = order.total_amount
+#             email = user.email
 
-            # Initialize transaction with Paystack
-            response = initialize_transaction(email, amount)
+#             # Initialize transaction with Paystack
+#             response = initialize_transaction(email, amount)
 
-            if response['status']:
-                return JsonResponse({'authorization_url': response['data']['authorization_url']})
-            else:
-                return JsonResponse({'error': 'Payment initialization failed'}, status=400)
-        except Order.DoesNotExist:
-            return JsonResponse({'error': 'Order not found'}, status=404)
+#             if response['status']:
+#                 return JsonResponse({'authorization_url': response['data']['authorization_url']})
+#             else:
+#                 return JsonResponse({'error': 'Payment initialization failed'}, status=400)
+#         except Order.DoesNotExist:
+#             return JsonResponse({'error': 'Order not found'}, status=404)
 
 
-class VerifyPayPalPaymentView(APIView):
-    def post (self, request):
-        reference = request.data.get('reference')
-        response = verify_payment(reference)
-        if response.get('status'):
-            return JsonResponse({'message': 'Payment successful', 'data': response['data']})
-        else:
-            return JsonResponse({'error': 'Payment verification failed'}, status=400)
+# class VerifyPayPalPaymentView(APIView):
+#     def post (self, request):
+#         reference = request.data.get('reference')
+#         response = verify_payment(reference)
+#         if response.get('status'):
+#             return JsonResponse({'message': 'Payment successful', 'data': response['data']})
+#         else:
+#             return JsonResponse({'error': 'Payment verification failed'}, status=400)
 
-class PayPalPaymentCallBackView(APIView):
-    def get(self, request):
-        reference = request.GET.get('reference')
+# class PayPalPaymentCallBackView(APIView):
+#     def get(self, request):
+#         reference = request.GET.get('reference')
 
-        response = verify_payment(reference)
-        if response.get('status'):
-            return JsonResponse({'message': 'Payment completed', 'data': response['data']}, status=200)
-        else:
-            return JsonResponse({'error': 'Payment failed or incomplete'}, status=400)
+#         response = verify_payment(reference)
+#         if response.get('status'):
+#             return JsonResponse({'message': 'Payment completed', 'data': response['data']}, status=200)
+#         else:
+#             return JsonResponse({'error': 'Payment failed or incomplete'}, status=400)
