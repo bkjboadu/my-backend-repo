@@ -7,7 +7,7 @@ urlpatterns = [
         views.StripePaymentIntentView.as_view(),
         name="stripe-payment-intent",
     ),
-    path("stripe-confirm-payment/", views.StripePaymentConfirmView, name="stripe-payment-success"),
+    path("stripe-confirm-payment/", views.StripePaymentConfirmView.as_view(), name="stripe-payment-success"),
     path('paypal-payment/<int:order_id>/', views.PayPalPaymentView.as_view(), name='paypal-payment'),
     path('paypal-payment-success/', views.PaypalPaymentSuccessView.as_view(), name='paypal-payment-success'),
     path('paypal-payment-error/', views.PayPalPaymentErrorView.as_view(), name='paypal-payment-error'),

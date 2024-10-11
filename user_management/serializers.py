@@ -6,9 +6,9 @@ from user_management.helpers.validator import CustomPasswordValidator
 from django.core.mail import send_mail
 
 from django.utils.crypto import get_random_string
-from user_management.helpers.send_mails import send_activation_email
 import jwt
 from django.contrib.auth.hashers import check_password
+from .tasks import send_activation_email
 
 
 class UserSerializer(serializers.ModelSerializer):

@@ -23,7 +23,7 @@ from django.contrib.auth import login
 from django.views import View
 
 from rest_framework.exceptions import NotFound
-from user_management.helpers.send_mails import send_mail
+from .tasks import send_mail
 from rest_framework_simplejwt.exceptions import TokenError
 from backend.settings import GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET
 from django.conf import settings
@@ -209,7 +209,7 @@ class PasswordResetView(generics.GenericAPIView):
             f"Thank you,\n"
             f"The Dropshop Team"
         )
-        send_mail(subject=subject, message=message, recipient=user)
+        send_mail.delay(subject=subject, message=message, recipient=user)
         return Response(
             {"success": "Email sent  Click the link in your email to continue"},
             status=status.HTTP_200_OK,
