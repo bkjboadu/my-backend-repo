@@ -24,8 +24,14 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 # celery
-CELERY_BROKER_URL = os.getenv('REDIS_URL')
-CELERY_RESULT_BACKEND = os.getenv('REDIS_URL')
+# Use the local Redis URL if running locally
+if os.getenv('ENV') == 'production':
+    REDIS_URL = os.getenv('REDIS_URL')
+else:
+    REDIS_URL = 'redis://localhost:6379/0'
+
+CELERY_BROKER_URL = f"{REDIS_URL}?ssl_cert_reqs=CERT_NONE" if 'rediss' in REDIS_URL else REDIS_URL
+CELERY_RESULT_BACKEND = f"{REDIS_URL}?ssl_cert_reqs=CERT_NONE" if 'rediss' in REDIS_URL else REDIS_URL
 
 # stripe details
 
