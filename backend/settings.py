@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.facebook",
     "allauth.socialaccount.providers.apple",
     "storages",
+    "django_filters"
 ]
 
 SITE_ID = 1

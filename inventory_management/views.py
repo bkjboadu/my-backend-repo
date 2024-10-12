@@ -28,6 +28,8 @@ from .serializers import (
     CategorySerializer,
     ProductReviewSerializer,
 )
+from .filters import ProductFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 # Store views
@@ -110,6 +112,8 @@ class SupplierDetailView(RetrieveUpdateDestroyAPIView):
 class ProductListCreateView(ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
 
     def get_permissions(self):
         if self.request.method == "POST":

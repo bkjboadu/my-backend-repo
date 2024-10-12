@@ -35,6 +35,7 @@ google-cloud-storage = "^2.18.2"
 paypalrestsdk = "^1.13.3"
 celery = "^5.4.0"
 redis = "^5.1.1"
+django-filter = "^24.3"
 
 
 [build-system]
