@@ -11,9 +11,16 @@ from .models import (
 )
 
 
+# Product Serializer
+class ProductSerializer(ModelSerializer):
+    class Meta:
+        model = Product
+        fields = "__all__"
 
 # Category Serializer
 class CategorySerializer(ModelSerializer):
+    products = ProductSerializer(many=True,read_only=True)
+
     class Meta:
         model = Category
         fields = "__all__"
@@ -41,12 +48,6 @@ class StockEntrySerializer(ModelSerializer):
         model = StockEntry
         fields = "__all__"
 
-
-# Product Serializer
-class ProductSerializer(ModelSerializer):
-    class Meta:
-        model = Product
-        fields = "__all__"
 
 
 # ProductVariant Serializer

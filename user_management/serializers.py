@@ -39,7 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("confirm_password")
         user = CustomUser.objects.create_user(**validated_data)
-        send_activation_email(request=self.context.get("request"), user=user)
+        send_activation_email.delay(request=self.context.get("request"), user=user)
         return user
 
 
