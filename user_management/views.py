@@ -155,10 +155,12 @@ class UserLoginView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
         refresh = RefreshToken.for_user(user)
+        user_data = UserSerializer(user).data
         return Response(
             {
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
+                "user": user_data
             },
             status=status.HTTP_200_OK,
         )

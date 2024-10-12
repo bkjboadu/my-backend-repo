@@ -4,6 +4,7 @@ from typing import Dict
 import requests
 from django.contrib.sites.shortcuts import get_current_site
 import jwt
+from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
 from celery import shared_task
 
@@ -43,16 +44,16 @@ def send_mail(subject, message, recipient, sender: Dict = None):
         print(f"Response: {response.text}")
 
 
+User = get_user_model()
 
 @shared_task
-def send_activation_email(request, user):
+def send_activation_email(domain, user_id):
+    user = User.objects.get(id=user_id)
     token = jwt.encode({"user_id": str(user.id)}, "secret_key", algorithm="HS256")
     encoded_token = base64.urlsafe_b64encode(token.encode("utf-8")).decode("utf-8")
-    current_site = get_current_site(request)
-    activation_url = f"http://{current_site.domain}/accounts/activate/{encoded_token}"
+    activation_url = f"http://{domain}/accounts/activate/{encoded_token}"
 
     url = "https://api.brevo.com/v3/smtp/email"
-
     message = (
         f"Hello {user.first_name},\n\n"
         f"Please activate your account by clicking the link below:\n"
@@ -61,13 +62,11 @@ def send_activation_email(request, user):
     )
 
     BREVO_API_KEY = os.getenv("BREVO_API_KEY")
-
     headers = {
         "accept": "application/json",
         "api-key": BREVO_API_KEY,
         "content-type": "application/json",
     }
-
     data = {
         "sender": {"name": "bright", "email": os.getenv("EMAIL_HOST_USER")},
         "to": [{"email": user.email, "name": user.first_name}],
@@ -76,7 +75,6 @@ def send_activation_email(request, user):
     }
 
     response = requests.post(url, json=data, headers=headers)
-
     if response.status_code == 201:
         print("Email sent successfully!")
     else:

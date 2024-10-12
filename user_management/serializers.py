@@ -17,8 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ("email", "first_name", "last_name", "password", "confirm_password")
-        extra_kwargs = {"password": {"write_only": True}}
+        fields = "__all__"
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -39,8 +38,10 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("confirm_password")
         user = CustomUser.objects.create_user(**validated_data)
-        send_activation_email.delay(request=self.context.get("request"), user=user)
+        domain = self.context.get("request").get_host()
+        send_activation_email.delay(domain=domain, user_id=user.id)
         return user
+
 
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
