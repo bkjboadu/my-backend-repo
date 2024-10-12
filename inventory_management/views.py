@@ -67,6 +67,8 @@ class CategoryListCreateView(ListCreateAPIView):
         return Category.objects.filter(store_id=store_id)
 
 
+
+
 class CategoryDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -76,6 +78,19 @@ class CategoryDetailView(RetrieveUpdateDestroyAPIView):
         if self.request.method in ['PUT','PATCH','DELETE']:
             return [IsAdminUser()]
         return []
+
+    def get(self, request, *args, **kwargs):
+        # Get the category instance
+        category = self.get_object()
+
+        # Filter products based on query parameters
+        products = Product.objects.filter(category=category)
+        product_filter = ProductFilter(request.GET, queryset=products)
+        filtered_products = product_filter.qs
+
+        # Pass filtered products to serializer context
+        serializer = self.get_serializer(category, context={'filtered_products': filtered_products})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
     def destroy(self, request, *args, **kwargs):

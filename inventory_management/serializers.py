@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, Serializer
+from rest_framework.serializers import ModelSerializer, Serializer, SerializerMethodField
 from .models import (
     Store,
     Supplier,
@@ -19,11 +19,17 @@ class ProductSerializer(ModelSerializer):
 
 # Category Serializer
 class CategorySerializer(ModelSerializer):
-    products = ProductSerializer(many=True,read_only=True)
+    # products = ProductSerializer(many=True,read_only=True)
+    products = SerializerMethodField()
 
     class Meta:
         model = Category
         fields = "__all__"
+
+    def get_products(self, obj):
+        # Use filtered products if available
+        products = self.context.get('filtered_products', obj.products)
+        return ProductSerializer(products, many=True).data
 
 
 # Store Serializer
