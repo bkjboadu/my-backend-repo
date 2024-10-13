@@ -48,12 +48,31 @@ class GoogleLoginView(View):
         return redirect(google_login_url)
 
 
-# Google callback view for handling OAuth response
 class GoogleCallbackView(View):
     def get(self, request, *args, **kwargs):
         code = request.GET.get("code")
         if not code:
             return JsonResponse({"error": "Missing authorization code"}, status=400)
+
+        auth_url = reverse('google_auth_api')
+        redirect_url = f"{auth_url}?code={code}"
+        return redirect(redirect_url)
+
+
+class GoogleAuthAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+            return self.handle_request(request)
+
+    def get(self, request, *args, **kwargs):
+        return self.handle_request(request)
+
+    def handle_request(self, request):
+        # Check for authorization code in both query params and request data
+        code = request.data.get("code") or request.query_params.get("code")
+        if not code:
+            return Response({"error": "Missing authorization code"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Exchange authorization code for access token
         token_url = "https://oauth2.googleapis.com/token"
@@ -68,40 +87,24 @@ class GoogleCallbackView(View):
         token_json = token_response.json()
 
         access_token = token_json.get("access_token")
-        if "id_token" not in token_json:
-            return JsonResponse({"error": "Failed to retrieve token"}, status=400)
+        if not access_token:
+            return Response({"error": "Failed to retrieve token"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Verify token and get user info
-        idinfo = id_token.verify_oauth2_token(
-            token_json["id_token"], google_requests.Request(), GOOGLE_OAUTH_CLIENT_ID
-        )
+        try:
+            idinfo = id_token.verify_oauth2_token(
+                token_json["id_token"], google_requests.Request(), GOOGLE_OAUTH_CLIENT_ID
+            )
+        except ValueError:
+            return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
-         # Fetch user info from Google
+        # Fetch user info from Google
         user_info_url = "https://www.googleapis.com/oauth2/v3/userinfo"
         headers = {"Authorization": f"Bearer {access_token}"}
         user_info_response = requests.get(user_info_url, headers=headers)
         user_info = user_info_response.json()
 
-        # Get or create user
-        user, created = CustomUser.objects.get_or_create(email=idinfo["email"])
-        if created:
-            user.first_name = idinfo.get("given_name", "")
-            user.last_name = idinfo.get("family_name", "")
-            user.is_verified = True
-            user.save()
-
-        # Log in the user
-        login(request, user, backend="user_management.oauth.GoogleAuthBackend")
-        response_data = {
-            "access_token": token_json["access_token"],
-            "expires_in": token_json.get("expires_in"),
-            "token_type": token_json.get("token_type"),
-            "user": user_info
-        }
-
-        if 'refresh_token' in token_json:
-            response_data['refresh_token'] = token_json['refresh_token']
-        return JsonResponse(response_data)
+        return Response(user_info, status=status.HTTP_200_OK)
 
 
 class UserSignupView(generics.GenericAPIView):
@@ -333,3 +336,60 @@ class LogoutView(generics.GenericAPIView):
             {"message": "User has been logged out successfully."},
             status=status.HTTP_200_OK,
         )
+
+
+
+# Google callback view for handling OAuth response
+# class GoogleCallbackView(View):
+#     def get(self, request, *args, **kwargs):
+#         code = request.GET.get("code")
+#         if not code:
+#             return JsonResponse({"error": "Missing authorization code"}, status=400)
+
+#         # Exchange authorization code for access token
+#         token_url = "https://oauth2.googleapis.com/token"
+#         data = {
+#             "code": code,
+#             "client_id": GOOGLE_OAUTH_CLIENT_ID,
+#             "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
+#             "redirect_uri": settings.LOGIN_REDIRECT_URL,
+#             "grant_type": "authorization_code",
+#         }
+#         token_response = requests.post(token_url, data=data)
+#         token_json = token_response.json()
+
+#         access_token = token_json.get("access_token")
+#         if "id_token" not in token_json:
+#             return JsonResponse({"error": "Failed to retrieve token"}, status=400)
+
+#         # Verify token and get user info
+#         idinfo = id_token.verify_oauth2_token(
+#             token_json["id_token"], google_requests.Request(), GOOGLE_OAUTH_CLIENT_ID
+#         )
+
+#          # Fetch user info from Google
+#         user_info_url = "https://www.googleapis.com/oauth2/v3/userinfo"
+#         headers = {"Authorization": f"Bearer {access_token}"}
+#         user_info_response = requests.get(user_info_url, headers=headers)
+#         user_info = user_info_response.json()
+
+#         # Get or create user
+#         user, created = CustomUser.objects.get_or_create(email=idinfo["email"])
+#         if created:
+#             user.first_name = idinfo.get("given_name", "")
+#             user.last_name = idinfo.get("family_name", "")
+#             user.is_verified = True
+#             user.save()
+
+#         # Log in the user
+#         login(request, user, backend="user_management.oauth.GoogleAuthBackend")
+#         response_data = {
+#             "access_token": token_json["access_token"],
+#             "expires_in": token_json.get("expires_in"),
+#             "token_type": token_json.get("token_type"),
+#             "user": user_info
+#         }
+
+#         if 'refresh_token' in token_json:
+#             response_data['refresh_token'] = token_json['refresh_token']
+#         return JsonResponse(response_data)
