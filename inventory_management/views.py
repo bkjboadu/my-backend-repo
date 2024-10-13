@@ -36,7 +36,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 class StoreListCreateView(ListCreateAPIView):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
-    permission_classes = [IsAdminUser]
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAdminUser()]
+        return []
+
 
 
 class StoreDetailView(RetrieveUpdateDestroyAPIView):
