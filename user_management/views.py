@@ -3,6 +3,8 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.views import TokenRefreshView
+
 import logging, jwt, asyncio, os
 from user_management.oauth import GoogleAuthBackend
 from .serializers import *
@@ -26,6 +28,7 @@ from rest_framework.exceptions import NotFound
 from .tasks import send_mail
 from rest_framework_simplejwt.exceptions import TokenError
 from backend.settings import GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET
+
 from django.conf import settings
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
@@ -89,7 +92,6 @@ class GoogleCallbackView(View):
 
         # Log in the user
         login(request, user, backend="user_management.oauth.GoogleAuthBackend")
-        # return JsonResponse({"message": "Google login successful"})
         response_data = {
             "access_token": token_json["access_token"],
             "expires_in": token_json.get("expires_in"),
@@ -124,6 +126,19 @@ class UserSignupView(generics.GenericAPIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CustomTokenRefreshView(TokenRefreshView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_200_OK:
+            return Response({
+                'access': response.data.get('access'),
+                'refresh': response.data.get('refresh')
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(response.data, status=response.status_code)
 
 class Activate(APIView):
     permission_classes = ()
