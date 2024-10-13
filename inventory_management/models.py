@@ -80,6 +80,9 @@ class ProductVariant(models.Model):
     sku = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity_in_stock = models.PositiveIntegerField(default=0)
+    color = models.CharField(max_length=50, blank=True, null=True)
+    memory_size = models.CharField(max_length=50, blank=True, null=True)
+
 
     class Meta:
         unique_together = ("product", "sku")
@@ -100,6 +103,18 @@ class ProductImage(models.Model):
     def __str__(self):
         return f"Image for {self.product.name}"
 
+
+# Variant Image Model
+class VariantImage(models.Model):
+    variant = models.ForeignKey(
+        ProductVariant, on_delete=models.CASCADE, related_name="images"
+    )
+    image = models.ImageField(upload_to="media/variant_images/", storage=GoogleCloudStorage())
+    alt_text = models.CharField(max_length=255, blank=True, null=True)
+    is_main = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Image for {self.variant.product.name} - {self.variant.name}"
 
 # Product Review Model
 class ProductReview(models.Model):
