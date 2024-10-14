@@ -54,9 +54,10 @@ class GoogleCallbackView(View):
         if not code:
             return JsonResponse({"error": "Missing authorization code"}, status=400)
 
-        auth_url = reverse('google_auth_api')
-        redirect_url = f"{auth_url}?code={code}"
-        return redirect(redirect_url)
+        return JsonResponse({"code":code})
+        # auth_url = reverse('google_auth_api')
+        # redirect_url = f"{auth_url}?code={code}"
+        # return redirect(redirect_url)
 
 
 class GoogleAuthAPIView(APIView):

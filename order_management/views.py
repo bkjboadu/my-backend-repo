@@ -12,6 +12,7 @@ from .serializers import (
 )
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+# from .tasks import process_order
 
 
 # Create a New Order
@@ -49,6 +50,9 @@ class CreateOrderView(APIView):
 
         order.total_amount = total_amount
         order.save()
+
+        #trigger the celery task to process the order
+        # process_order.delay(order.id)
 
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
