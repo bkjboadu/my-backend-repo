@@ -17,7 +17,6 @@ def send_order_confirmation_mail(order_id):
         print("Order not found")
         return
 
-    print(order.user)
     subject = "Thank You for Your Order with Dropshop"
 
     message = "Order confirmed"
@@ -64,9 +63,6 @@ def send_order_confirmation_mail(order_id):
     }
 
     url = "https://api.brevo.com/v3/smtp/email"
-    print("url", url)
-    print("data", data)
-    print("headers", headers)
     response = requests.post(url, json=data, headers=headers)
 
     if response.status_code == 201:
