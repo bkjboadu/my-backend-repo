@@ -11,7 +11,7 @@ from django.views.generic import View
 from paypalrestsdk import Payment
 from rest_framework.views import APIView
 from .paystack import verify_payment
-from .tasks import process_order, send_mail, send_order_confirmation_mail
+from .tasks import process_order, send_order_confirmation_mail
 
 
 # stripe payment setup
@@ -64,6 +64,11 @@ class StripePaymentConfirmView(View):
 class PayPalPaymentView(View):
     def get(self, request, order_id):
         order = get_object_or_404(Order, id=order_id)
+
+        if order.payment_status == 'paid':
+            return JsonResponse({
+                "details":"Order already paid for"
+            })
 
         # Setup PayPal Payment
         payment = Payment(
