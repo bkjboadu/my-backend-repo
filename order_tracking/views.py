@@ -9,7 +9,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from order_tracking.serializers import OrderTrackingSerializer
 
 
-#for user
+# for user
+
 
 class TrackOrderView(APIView):
     permission_class = [IsAuthenticated]
@@ -20,8 +21,7 @@ class TrackOrderView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-#for admin
+# for admin
 class OrderTrackingDetailView(APIView):
     permission_classes = [IsAdminUser]
 
@@ -41,4 +41,3 @@ class UpdateOrderTrackingStatus(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-

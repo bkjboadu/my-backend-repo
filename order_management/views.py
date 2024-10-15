@@ -1,3 +1,4 @@
+from django.views.i18n import JsonResponse
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -12,7 +13,7 @@ from .serializers import (
 )
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-# from .tasks import process_order
+
 
 
 # Create a New Order
@@ -20,9 +21,8 @@ class CreateOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        cart = request.data.get(
-            "cart"
-        )  # Assuming you pass the cart data from the frontend
+        cart = request.data.get("cart")
+        payment_method = request.data.get('payment-method')
         if not cart:
             return Response(
                 {"detail": "No cart data provided."}, status=status.HTTP_400_BAD_REQUEST
@@ -40,6 +40,13 @@ class CreateOrderView(APIView):
         for item in cart:
             product = get_object_or_404(Product, id=item["product_id"])
             quantity = item["quantity"]
+            if quantity > product.quantity_in_stock:
+                return JsonResponse(
+                    {
+                        "status": "error",
+                        "details": f"Only {product.quantity_in_stock} units of '{product.name}' are available in stock.",
+                    }
+                )
             order_item = OrderItem.objects.create(
                 order=order,
                 product=product,
@@ -51,10 +58,57 @@ class CreateOrderView(APIView):
         order.total_amount = total_amount
         order.save()
 
-        #trigger the celery task to process the order
-        # process_order.delay(order.id)
-
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
+
+class RequestReturnView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id)
+
+        if order.status != "delivered":
+            return Response(
+                {"detail": "Only delivered orders can be returned"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        order.return_requested = True
+        order.return_reasone = request.data.get("return_reason", "")
+        order.save()
+        return Response(
+            {
+                "details": "Your return request has been successfully submitted. Our team will review it and contact you shortly."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class ProcessReturnView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id)
+
+        if not order.return_requested:
+            return Response(
+                {"details": "No return request has been made for this order"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        approve_return = request.data.get("approve", False)
+        if approve_return:
+            order.return_approved = True
+            return Response(
+                {"details": "Return request approved"},
+                status=status.HTTP_200_OK
+            )
+        else:
+            order.return_approved = False
+            return Response(
+                {"details": "Return request denied"},
+                status=status.HTTP_200_OK
+            )
 
 
 # View, Update, or Cancel an Order
@@ -83,7 +137,6 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         )
 
 
-# List all orders for the authenticated user
 class UserOrderListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
@@ -92,14 +145,12 @@ class UserOrderListView(generics.ListAPIView):
         return Order.objects.filter(user=self.request.user)
 
 
-# Admin: List all orders
 class AdminOrderListView(generics.ListAPIView):
     permission_classes = [IsAdminUser]
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
 
-# Update Order Status (Admin Only)
 class UpdateOrderStatusView(APIView):
     permission_classes = [IsAdminUser]
 

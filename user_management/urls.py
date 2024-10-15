@@ -5,13 +5,11 @@ from .views import GoogleLoginView, GoogleCallbackView
 urlpatterns = [
     path("signup/", UserSignupView.as_view(), name="signup"),
     path("login/", UserLoginView.as_view(), name="login"),
-
     path("google/login/", GoogleLoginView.as_view(), name="google_login"),
     path(
         "google/login/callback/", GoogleCallbackView.as_view(), name="google_callback"
     ),
-    path("google-auth/",GoogleAuthAPIView.as_view(), name='google_auth_api'),
-
+    path("google-auth/", GoogleAuthAPIView.as_view(), name="google_auth_api"),
     path("users/", UserLists.as_view(), name="lists"),
     path("activate/<str:token>/", Activate.as_view(), name="activate"),
     path("password_reset/", PasswordResetView.as_view(), name="password_reset"),
@@ -25,10 +23,8 @@ urlpatterns = [
     path("delete_account/", DeleteAccount.as_view(), name="delete"),
     path("activate/<token>/", Activate.as_view(), name="activate"),
     path("logout/", LogoutView.as_view(), name="logout"),
-
-    path('token/refresh/',CustomTokenRefreshView.as_view(),name='token_refresh')
-
-     # testing google cloud storage setup
+    path("token/refresh/", CustomTokenRefreshView.as_view(), name="token_refresh"),
+    # testing google cloud storage setup
     # path("upload-file/",upload_file, name="upload_file"),
     # path('view-image/',view_image, name='view_file'),
 ]

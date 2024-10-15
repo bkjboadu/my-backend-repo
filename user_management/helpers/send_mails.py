@@ -37,7 +37,6 @@ def send_activation_email(request, user):
         "htmlContent": message,
     }
 
-
     response = requests.post(url, json=data, headers=headers)
 
     if response.status_code == 201:
@@ -45,7 +44,6 @@ def send_activation_email(request, user):
     else:
         print(f"Failed to send email. Status code: {response.status_code}")
         print(f"Response: {response.text}")
-
 
 
 def send_mail(subject, message, recipient, sender: Dict = None):

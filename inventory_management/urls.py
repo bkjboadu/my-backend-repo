@@ -23,7 +23,11 @@ urlpatterns = [
     path("stores/", StoreListCreateView.as_view(), name="store-list-create"),
     path("stores/<int:pk>/", StoreDetailView.as_view(), name="store-detail"),
     # Category URLs
-    path("stores/<int:store_id>/categories/", CategoryListCreateView.as_view(), name="category-list-create"),
+    path(
+        "stores/<int:store_id>/categories/",
+        CategoryListCreateView.as_view(),
+        name="category-list-create",
+    ),
     path("categories/<int:pk>/", CategoryDetailView.as_view(), name="category-detail"),
     # Supplier URLs
     path("suppliers/", SupplierListCreateView.as_view(), name="supplier-list-create"),

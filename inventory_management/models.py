@@ -83,7 +83,6 @@ class ProductVariant(models.Model):
     color = models.CharField(max_length=50, blank=True, null=True)
     memory_size = models.CharField(max_length=50, blank=True, null=True)
 
-
     class Meta:
         unique_together = ("product", "sku")
 
@@ -96,7 +95,9 @@ class ProductImage(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="images"
     )
-    image = models.ImageField(upload_to="media/product_images/",storage=GoogleCloudStorage())
+    image = models.ImageField(
+        upload_to="media/product_images/", storage=GoogleCloudStorage()
+    )
     alt_text = models.CharField(max_length=255, blank=True, null=True)
     is_main = models.BooleanField(default=False)
 
@@ -109,12 +110,15 @@ class VariantImage(models.Model):
     variant = models.ForeignKey(
         ProductVariant, on_delete=models.CASCADE, related_name="images"
     )
-    image = models.ImageField(upload_to="media/variant_images/", storage=GoogleCloudStorage())
+    image = models.ImageField(
+        upload_to="media/variant_images/", storage=GoogleCloudStorage()
+    )
     alt_text = models.CharField(max_length=255, blank=True, null=True)
     is_main = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Image for {self.variant.product.name} - {self.variant.name}"
+
 
 # Product Review Model
 class ProductReview(models.Model):

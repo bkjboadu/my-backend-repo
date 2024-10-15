@@ -54,7 +54,7 @@ class GoogleCallbackView(View):
         if not code:
             return JsonResponse({"error": "Missing authorization code"}, status=400)
 
-        return JsonResponse({"code":code})
+        return JsonResponse({"code": code})
         # auth_url = reverse('google_auth_api')
         # redirect_url = f"{auth_url}?code={code}"
         # return redirect(redirect_url)
@@ -64,7 +64,7 @@ class GoogleAuthAPIView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-            return self.handle_request(request)
+        return self.handle_request(request)
 
     def get(self, request, *args, **kwargs):
         return self.handle_request(request)
@@ -73,7 +73,10 @@ class GoogleAuthAPIView(APIView):
         # Check for authorization code in both query params and request data
         code = request.data.get("code") or request.query_params.get("code")
         if not code:
-            return Response({"error": "Missing authorization code"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Missing authorization code"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Exchange authorization code for access token
         token_url = "https://oauth2.googleapis.com/token"
@@ -89,14 +92,21 @@ class GoogleAuthAPIView(APIView):
 
         access_token = token_json.get("access_token")
         if not access_token:
-            return Response({"error": "Failed to retrieve token"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Failed to retrieve token"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             idinfo = id_token.verify_oauth2_token(
-                token_json["id_token"], google_requests.Request(), GOOGLE_OAUTH_CLIENT_ID
+                token_json["id_token"],
+                google_requests.Request(),
+                GOOGLE_OAUTH_CLIENT_ID,
             )
         except ValueError:
-            return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         # Fetch user info from Google
         user_info_url = "https://www.googleapis.com/oauth2/v3/userinfo"
@@ -112,14 +122,16 @@ class UserSignupView(generics.GenericAPIView):
     serializer_class = UserSerializer
 
     def post(self, request, *args, **kwargs):
-        if request.data.get('method') == 'google':
-            id_token = request.data.get('id_token')
+        if request.data.get("method") == "google":
+            id_token = request.data.get("id_token")
             backend = GoogleAuthBackend()
             user = backend.authenticate(request, id_token=id_token)
             if user:
-                return Response({'message': 'Logged in with Google successfully.'})
+                return Response({"message": "Logged in with Google successfully."})
             else:
-                return Response({'message': 'Failed to log in with Google.'}, status=400)
+                return Response(
+                    {"message": "Failed to log in with Google."}, status=400
+                )
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -129,6 +141,7 @@ class UserSignupView(generics.GenericAPIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class CustomTokenRefreshView(TokenRefreshView):
     permission_classes = [AllowAny]
 
@@ -136,12 +149,16 @@ class CustomTokenRefreshView(TokenRefreshView):
         response = super().post(request, *args, **kwargs)
 
         if response.status_code == status.HTTP_200_OK:
-            return Response({
-                'access': response.data.get('access'),
-                'refresh': response.data.get('refresh')
-            }, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "access": response.data.get("access"),
+                    "refresh": response.data.get("refresh"),
+                },
+                status=status.HTTP_200_OK,
+            )
         else:
             return Response(response.data, status=response.status_code)
+
 
 class Activate(APIView):
     permission_classes = ()
@@ -178,7 +195,7 @@ class UserLoginView(generics.GenericAPIView):
             {
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
-                "user": user_data
+                "user": user_data,
             },
             status=status.HTTP_200_OK,
         )

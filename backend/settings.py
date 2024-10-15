@@ -25,24 +25,28 @@ ALLOWED_HOSTS = ["*"]
 
 # celery
 # Use the local Redis URL if running locally
-if os.getenv('ENV') == 'production':
-    REDIS_URL = os.getenv('REDIS_URL')
+if os.getenv("ENV") == "production":
+    REDIS_URL = os.getenv("REDIS_URL")
 else:
-    REDIS_URL = 'redis://localhost:6379/0'
+    REDIS_URL = "redis://localhost:6379/0"
 
-CELERY_BROKER_URL = f"{REDIS_URL}?ssl_cert_reqs=CERT_NONE" if 'rediss' in REDIS_URL else REDIS_URL
-CELERY_RESULT_BACKEND = f"{REDIS_URL}?ssl_cert_reqs=CERT_NONE" if 'rediss' in REDIS_URL else REDIS_URL
+CELERY_BROKER_URL = (
+    f"{REDIS_URL}?ssl_cert_reqs=CERT_NONE" if "rediss" in REDIS_URL else REDIS_URL
+)
+CELERY_RESULT_BACKEND = (
+    f"{REDIS_URL}?ssl_cert_reqs=CERT_NONE" if "rediss" in REDIS_URL else REDIS_URL
+)
 
 # stripe details
 
-STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
-STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 
 # paypal details
 
-PAYPAL_MODE = os.getenv('PAYPAL_MODE')
-PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
-PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
+PAYPAL_MODE = os.getenv("PAYPAL_MODE")
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
 
 # paystack
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
@@ -76,7 +80,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.facebook",
     "allauth.socialaccount.providers.apple",
     "storages",
-    "django_filters"
+    "django_filters",
 ]
 
 SITE_ID = 1
@@ -111,19 +115,21 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Google Cloud Storage settings
-GS_BUCKET_NAME = 'dropshop-media-bucket'
-GS_CREDENTIALS_DICT = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
+GS_BUCKET_NAME = "dropshop-media-bucket"
+GS_CREDENTIALS_DICT = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
 
 
-GS_CREDENTIALS = service_account.Credentials.from_service_account_info(GS_CREDENTIALS_DICT)
+GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+    GS_CREDENTIALS_DICT
+)
 
 # Static files settings
-STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/static/"
+STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 
 # Media files settings
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
 
 GS_FILE_OVERWRITE = False
 
@@ -173,7 +179,7 @@ CSRF_TRUSTED_ORIGINS = ["https://dropshop-backend-1ee9a87b1bda.herokuapp.com"]
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR,'templates')],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

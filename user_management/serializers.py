@@ -43,7 +43,6 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser

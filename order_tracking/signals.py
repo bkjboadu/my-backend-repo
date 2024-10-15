@@ -5,10 +5,10 @@ from .models import OrderTracking
 
 def update_order_status(sender, instance, **kwargs):
     order = instance.order
-    if instance.status == 'delivered':
-        order.status = 'delivered'
-    elif instance.status == 'failed':
-        order.status = 'failed_delivery'
+    if instance.status == "delivered":
+        order.status = "delivered"
+    elif instance.status == "failed":
+        order.status = "failed_delivery"
     order.save()
 
 
@@ -19,4 +19,3 @@ def update_order_status(sender, instance, **kwargs):
     elif instance.status == "failed":
         order.status = "failed_delivery"
     order.save()
-

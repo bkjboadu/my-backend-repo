@@ -10,7 +10,7 @@ from celery import shared_task
 
 
 @shared_task
-def send_mail(subject, message, recipient, sender: Dict = None):
+def send_mail(subject, message, recipient, sender: Dict = None, data: Dict = None):
 
     if sender is None:
         sender = {"name": "bright", "email": "brbojr@gmail.com"}
@@ -29,7 +29,7 @@ def send_mail(subject, message, recipient, sender: Dict = None):
     data = {
         "sender": {"name": sender["name"], "email": sender["email"]},
         "to": [{"email": recipient["email"], "name": recipient["first_name"]}],
-        "subject": "Activate your account",
+        "subject": subject,
         "htmlContent": message,
     }
 
@@ -45,6 +45,7 @@ def send_mail(subject, message, recipient, sender: Dict = None):
 
 
 User = get_user_model()
+
 
 @shared_task
 def send_activation_email(domain, user_id):

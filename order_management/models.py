@@ -1,3 +1,4 @@
+from celery.app.utils import DEFAULTS
 from django.db import models
 from django.conf import settings
 from inventory_management.models import Product
@@ -38,6 +39,9 @@ class Order(models.Model):
     shipping_address = models.TextField()
     billing_address = models.TextField(blank=True, null=True)
     payment_method = models.CharField(max_length=50, null=True, blank=True)
+    return_requested = models.BooleanField(default=False)
+    return_approved = models.BooleanField(default=False)
+    return_reason = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Order {self.order_number} by {self.user.first_name}"
