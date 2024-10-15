@@ -2,12 +2,14 @@ from celery import shared_task
 from order_management.models import Order
 from django.db import transaction
 from django.forms.models import model_to_dict
-import requests,os
+import requests, os
+from typing import Dict
+
 
 @shared_task
 def send_order_confirmation_mail(order_id):
     store_name = "Dropshop Electronics"
-    sender = {"name": "bright", "email": "brbojr@gmail.com"}
+    sender = {"name": "bright", "email": "brightboadujnr@gmail.com"}
 
     try:
         order = Order.objects.get(id=order_id)
@@ -15,9 +17,10 @@ def send_order_confirmation_mail(order_id):
         print("Order not found")
         return
 
-
     print(order.user)
     subject = "Thank You for Your Order with Dropshop"
+
+    message = "Order confirmed"
 
     message = f"""
         Hi {order.user.first_name},
@@ -55,13 +58,15 @@ def send_order_confirmation_mail(order_id):
 
     data = {
         "sender": {"name": sender["name"], "email": sender["email"]},
-        "to": [{"email": order.user.email, "name":order.user.first_name}],
+        "to": [{"email": order.user.email, "name": order.user.first_name}],
         "subject": subject,
         "htmlContent": message,
     }
 
     url = "https://api.brevo.com/v3/smtp/email"
-
+    print("url", url)
+    print("data", data)
+    print("headers", headers)
     response = requests.post(url, json=data, headers=headers)
 
     if response.status_code == 201:
@@ -69,7 +74,6 @@ def send_order_confirmation_mail(order_id):
     else:
         print(f"Failed to send email. Status code: {response.status_code}")
         print(f"Response: {response.text}")
-
 
 
 @shared_task
@@ -95,11 +99,12 @@ def process_order(order_id):
                 product.save()
 
         order.status = "processing"
-        send_order_confirmation_mail.delay(order_id)
         order.save()
 
+        send_order_confirmation_mail.delay(order_id)
+
         return {
-            "status": "success",
+            "status": True,
             "message": f"Order {order.order_number} processed successfully",
         }
     except Order.DoesNotExist:

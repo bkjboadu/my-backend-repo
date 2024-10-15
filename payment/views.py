@@ -11,7 +11,7 @@ from django.views.generic import View
 from paypalrestsdk import Payment
 from rest_framework.views import APIView
 from .paystack import verify_payment
-from .tasks import process_order
+from .tasks import process_order, send_mail, send_order_confirmation_mail
 
 
 # stripe payment setup
@@ -74,7 +74,9 @@ class PayPalPaymentView(View):
                     "return_url": request.build_absolute_uri(
                         reverse("paypal-payment-success")
                     ),
-                    "cancel_url": request.build_absolute_uri(reverse("paypal-payment-error")),
+                    "cancel_url": request.build_absolute_uri(
+                        reverse("paypal-payment-error")
+                    ),
                 },
                 "transactions": [
                     {
@@ -130,10 +132,11 @@ class PaypalPaymentSuccessView(View):
                     amount=order.total_amount,
                     status="completed",
                 )
-                order.payment_status = 'paid'
+                order.payment_status = "paid"
                 order.save()
 
                 process_order.delay(order_id)
+
                 return JsonResponse(
                     {
                         "status": "success",

@@ -15,14 +15,13 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 
-
 # Create a New Order
 class CreateOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         cart = request.data.get("cart")
-        payment_method = request.data.get('payment-method')
+        payment_method = request.data.get("payment-method")
         if not cart:
             return Response(
                 {"detail": "No cart data provided."}, status=status.HTTP_400_BAD_REQUEST
@@ -100,14 +99,12 @@ class ProcessReturnView(APIView):
         if approve_return:
             order.return_approved = True
             return Response(
-                {"details": "Return request approved"},
-                status=status.HTTP_200_OK
+                {"details": "Return request approved"}, status=status.HTTP_200_OK
             )
         else:
             order.return_approved = False
             return Response(
-                {"details": "Return request denied"},
-                status=status.HTTP_200_OK
+                {"details": "Return request denied"}, status=status.HTTP_200_OK
             )
 
 
