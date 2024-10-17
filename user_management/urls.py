@@ -24,7 +24,4 @@ urlpatterns = [
     path("activate/<token>/", Activate.as_view(), name="activate"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("token/refresh/", CustomTokenRefreshView.as_view(), name="token_refresh"),
-    # testing google cloud storage setup
-    # path("upload-file/",upload_file, name="upload_file"),
-    # path('view-image/',view_image, name='view_file'),
 ]
