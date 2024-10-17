@@ -48,7 +48,11 @@ class StoreListCreateView(ListCreateAPIView):
 class StoreDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
-    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAdminUser()]
+        return []
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
