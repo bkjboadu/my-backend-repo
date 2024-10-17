@@ -89,8 +89,8 @@ class GoogleAuthAPIView(APIView):
         }
         token_response = requests.post(token_url, data=data)
         token_json = token_response.json()
-
-        access_token = token_json.get("code")
+        print(token_json)
+        access_token = token_json.get("access_token")
         print(access_token)
         if not access_token:
             return Response(
