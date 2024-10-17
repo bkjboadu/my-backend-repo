@@ -7,12 +7,14 @@ from .models import (
     Supplier,
     StockEntry,
     Store,
+    VariantImage
 )
 
-admin.site.register(Category),
-admin.site.register(Product),
-admin.site.register(ProductImage),
-admin.site.register(ProductVariant),
+admin.site.register(Category)
+admin.site.register(Product)
+admin.site.register(ProductImage)
+admin.site.register(ProductVariant)
 admin.site.register(Supplier)
 admin.site.register(Store)
 admin.site.register(StockEntry)
+admin.site.register(VariantImage)

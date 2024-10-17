@@ -17,6 +17,7 @@ from .models import (
     ProductImage,
     StockEntry,
     ProductReview,
+    VariantImage
 )
 from .serializers import (
     StoreSerializer,
@@ -27,6 +28,7 @@ from .serializers import (
     ProductImageSerializer,
     CategorySerializer,
     ProductReviewSerializer,
+    VariantImageSerializer,
 )
 from .filters import ProductFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -217,6 +219,14 @@ class ProductImageDetailView(RetrieveUpdateDestroyAPIView):
             status=status.HTTP_200_OK,
         )
 
+class VariantImageListCreateView(ListCreateAPIView):
+    queryset = VariantImage.objects.all()
+    serializer_class = VariantImageSerializer
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAdminUser]
+        return []
 
 # Stock Entry Views
 class StockEntryListCreateView(ListCreateAPIView):

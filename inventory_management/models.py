@@ -74,7 +74,7 @@ class Product(models.Model):
 # Product Variant Model (Optional)
 class ProductVariant(models.Model):
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="variants"
+        Product, on_delete=models.CASCADE, related_name="product_variants"
     )
     name = models.CharField(max_length=255)
     sku = models.CharField(max_length=100)
@@ -93,7 +93,7 @@ class ProductVariant(models.Model):
 # Product Image Model
 class ProductImage(models.Model):
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="images"
+        Product, on_delete=models.CASCADE, related_name="product_images"
     )
     image = models.ImageField(
         upload_to="media/product_images/", storage=GoogleCloudStorage()
@@ -107,14 +107,17 @@ class ProductImage(models.Model):
 
 # Variant Image Model
 class VariantImage(models.Model):
+    name = models.CharField(max_length=255,null=True,blank=True)
     variant = models.ForeignKey(
-        ProductVariant, on_delete=models.CASCADE, related_name="images"
+        ProductVariant, on_delete=models.CASCADE, related_name="product_variant_images"
     )
     image = models.ImageField(
         upload_to="media/variant_images/", storage=GoogleCloudStorage()
     )
     alt_text = models.CharField(max_length=255, blank=True, null=True)
     is_main = models.BooleanField(default=False)
+    description = models.CharField(max_length=255,blank=True,null=True)
+
 
     def __str__(self):
         return f"Image for {self.variant.product.name} - {self.variant.name}"

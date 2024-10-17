@@ -12,11 +12,35 @@ from .models import (
     ProductVariant,
     Category,
     ProductReview,
+    VariantImage,
 )
+class VariantImageSerializer(ModelSerializer):
+    class Meta:
+        model = VariantImage
+        fields = "__all__"
+
+
+# ProductVariant Serializer
+class ProductVariantSerializer(ModelSerializer):
+    product_variant_images = VariantImageSerializer(many=True,read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = "__all__"
+
+
+# ProductImage Serializer
+class ProductImageSerializer(ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = "__all__"
 
 
 # Product Serializer
 class ProductSerializer(ModelSerializer):
+    product_variants = ProductVariantSerializer(many=True,read_only=True)
+    product_images = ProductImageSerializer(many=True,read_only=True)
+
     class Meta:
         model = Product
         fields = "__all__"
@@ -57,20 +81,6 @@ class SupplierSerializer(ModelSerializer):
 class StockEntrySerializer(ModelSerializer):
     class Meta:
         model = StockEntry
-        fields = "__all__"
-
-
-# ProductVariant Serializer
-class ProductVariantSerializer(ModelSerializer):
-    class Meta:
-        model = ProductVariant
-        fields = "__all__"
-
-
-# ProductImage Serializer
-class ProductImageSerializer(ModelSerializer):
-    class Meta:
-        model = ProductImage
         fields = "__all__"
 
 
