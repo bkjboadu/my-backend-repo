@@ -1,4 +1,4 @@
-import base64
+import base64,logging
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -33,6 +33,8 @@ from django.conf import settings
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 import requests
+
+logging.basicConfig(level=logging.INFO)
 
 
 # Google login view as a RedirectView
@@ -84,14 +86,15 @@ class GoogleAuthAPIView(APIView):
             "code": code,
             "client_id": GOOGLE_OAUTH_CLIENT_ID,
             "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
-            "redirect_uri": settings.LOGIN_REDIRECT_URL,
+            # "redirect_uri": settings.LOGIN_REDIRECT_URL,
+            "redirect_uri":"http://localhost:8080/accounts/google/login/callback/",
             "grant_type": "authorization_code",
         }
         token_response = requests.post(token_url, data=data)
         token_json = token_response.json()
-        print(token_json)
+        logging.info("token_json",token_json)
         access_token = token_json.get("access_token")
-        print(access_token)
+        logging.info("access_token",access_token)
         if not access_token:
             return Response(
                 {"error": "Failed to retrieve token"},
