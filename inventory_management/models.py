@@ -104,7 +104,7 @@ class ProductImage(models.Model):
     def save(self,*args,**kwargs):
         if not ProductImage.objects.filter(product=self.product).exists():
             self.is_main = True
-        super(ProductImage, self.save(*args,**kwargs))
+        super(ProductImage, self).save(*args,**kwargs)
 
 
     def __str__(self):
