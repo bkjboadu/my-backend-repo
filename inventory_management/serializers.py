@@ -14,6 +14,16 @@ from .models import (
     ProductReview,
     VariantImage,
 )
+from cart_management.models import Wishlist
+
+
+class ProductReviewSerializer(ModelSerializer):
+    class Meta:
+        model = ProductReview
+        fields = "__all__"
+        read_only_fields = ("product", "user", "created_at", "updated_at")
+
+
 class VariantImageSerializer(ModelSerializer):
     class Meta:
         model = VariantImage
@@ -38,12 +48,35 @@ class ProductImageSerializer(ModelSerializer):
 
 # Product Serializer
 class ProductSerializer(ModelSerializer):
-    product_variants = ProductVariantSerializer(many=True,read_only=True)
+    reviews = ProductReviewSerializer(many=True,read_only=True)
     product_images = ProductImageSerializer(many=True,read_only=True)
+    is_in_wishlist = SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = [
+                    "id",
+                    "name",
+                    "description",
+                    "sku",
+                    "price",
+                    "quantity_in_stock",
+                    "created_at",
+                    "updated_at",
+                    "is_active",
+                    "store",
+                    "category",
+                    "supplier",
+                    "is_in_wishlist",
+                    "reviews",
+                    "product_images",
+                ]
+
+    def get_is_in_wishlist(self,obj):
+        user = self.context.get('request').user
+        if user.is_authenticated:
+            return Wishlist.objects.filter(user=user,product=obj).exists()
+        return False
 
 
 # Category Serializer
@@ -82,10 +115,3 @@ class StockEntrySerializer(ModelSerializer):
     class Meta:
         model = StockEntry
         fields = "__all__"
-
-
-class ProductReviewSerializer(ModelSerializer):
-    class Meta:
-        model = ProductReview
-        fields = "__all__"
-        read_only_fields = ("product", "user", "created_at", "updated_at")
