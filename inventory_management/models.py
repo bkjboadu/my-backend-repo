@@ -102,6 +102,9 @@ class ProductImage(models.Model):
     is_main = models.BooleanField(default=False)
 
     def save(self,*args,**kwargs):
+        if self.is_main:
+            ProductImage.objects.filter(product=self.product, is_main=True).update(is_main=False)
+
         if not ProductImage.objects.filter(product=self.product).exists():
             self.is_main = True
         super(ProductImage, self).save(*args,**kwargs)
