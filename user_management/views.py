@@ -88,7 +88,7 @@ class GoogleAuthAPIView(APIView):
             "code": code,
             "client_id": GOOGLE_OAUTH_CLIENT_ID,
             "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
-            "redirect_uri":redirect_uri,
+            "redirect_uri":"http://localhost:8080/accounts/google/login/",
             "grant_type": "authorization_code",
         }
 
