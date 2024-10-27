@@ -82,12 +82,13 @@ class GoogleAuthAPIView(APIView):
 
         # Exchange authorization code for access token
         token_url = "https://oauth2.googleapis.com/token"
+        redirect_uri = os.getenv("REDIRECT_URI", "http://localhost:8080/accounts/google/login/")
+
         data = {
             "code": code,
             "client_id": GOOGLE_OAUTH_CLIENT_ID,
             "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
-            # "redirect_uri": settings.LOGIN_REDIRECT_URL,
-            "redirect_uri":"http://localhost:8080/accounts/google/login/",
+            "redirect_uri":redirect_uri,
             "grant_type": "authorization_code",
         }
 
