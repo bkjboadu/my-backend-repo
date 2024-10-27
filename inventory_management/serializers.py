@@ -30,7 +30,6 @@ class VariantImageSerializer(ModelSerializer):
         fields = "__all__"
 
 
-# ProductVariant Serializer
 class ProductVariantSerializer(ModelSerializer):
     product_variant_images = VariantImageSerializer(many=True,read_only=True)
 
@@ -39,14 +38,12 @@ class ProductVariantSerializer(ModelSerializer):
         fields = "__all__"
 
 
-# ProductImage Serializer
 class ProductImageSerializer(ModelSerializer):
     class Meta:
         model = ProductImage
         fields = "__all__"
 
 
-# Product Serializer
 class ProductSerializer(ModelSerializer):
     reviews = ProductReviewSerializer(many=True,read_only=True)
     product_images = ProductImageSerializer(many=True,read_only=True)
@@ -79,9 +76,7 @@ class ProductSerializer(ModelSerializer):
         return False
 
 
-# Category Serializer
 class CategorySerializer(ModelSerializer):
-    # products = ProductSerializer(many=True,read_only=True)
     products = SerializerMethodField()
 
     class Meta:
@@ -89,12 +84,10 @@ class CategorySerializer(ModelSerializer):
         fields = "__all__"
 
     def get_products(self, obj):
-        # Use filtered products if available
         products = self.context.get("filtered_products", obj.products)
         return ProductSerializer(products, many=True).data
 
 
-# Store Serializer
 class StoreSerializer(ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
 
@@ -103,14 +96,12 @@ class StoreSerializer(ModelSerializer):
         fields = "__all__"
 
 
-# Supplier Serializer
 class SupplierSerializer(ModelSerializer):
     class Meta:
         model = Supplier
         fields = "__all__"
 
 
-# StockEntry Serializer
 class StockEntrySerializer(ModelSerializer):
     class Meta:
         model = StockEntry

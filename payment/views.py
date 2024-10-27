@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 import stripe, json
 import requests
 from django.conf import settings
@@ -18,11 +19,18 @@ from .tasks import process_order, send_order_confirmation_mail
 stripe.api_key = settings.STRIPE_SECRET_KEY
 paystack_secret_key = settings.PAYSTACK_SECRET_KEY
 
+PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY
+headers = {
+    "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
+    "Content-Type": "application/json",
+}
 
-class StripePaymentIntentView(View):
+class StripePaymentIntentView(APIView):
+    permission_classes = [IsAuthenticated]
+
     @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
-        order_id = request.POST.get("order_id")
+        order_id = request.data.get("order_id")
         order = get_object_or_404(Order, id=order_id)
         intent = stripe.PaymentIntent.create(
             amount=int(order.total_amount * 100),
@@ -32,20 +40,26 @@ class StripePaymentIntentView(View):
         return JsonResponse({"clientSecret": intent["client_secret"]})
 
 
-class StripePaymentConfirmView(View):
+class StripePaymentConfirmView(APIView):
+    permission_classes = [IsAuthenticated]
+
     @method_decorator(csrf_exempt)
     def post(self, request):
-        payment_intent_id = request.POST.get("payment_intent_id")
+        payment_intent_id = request.data.get("payment_intent_id")
         try:
             payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-            stripe_payment_id = payment_intent.id
+            stripe_charge_id = payment_intent.id
+            stripe_intent_status = payment_intent.status
             amount_received = payment_intent.amount_received / 100
+            print('Stripe_charge_id',stripe_charge_id)
+            print("Stripe_intent_status",stripe_intent_status)
+            print("Stripe_amount",amount_received)
 
             payment = StripePayment.objects.create(
-                order_id=request.POST.get("order_id"),
-                stripe_payment_id=stripe_payment_id,
+                order_id=request.data.get("order_id"),
+                stripe_charge_id=stripe_charge_id,
                 amount=amount_received,
-                status=payment_intent.status,
+                status=stripe_intent_status,
             )
 
             return JsonResponse(
@@ -70,7 +84,6 @@ class PayPalPaymentView(View):
                 "details":"Order already paid for"
             })
 
-        # Setup PayPal Payment
         payment = Payment(
             {
                 "intent": "sale",
@@ -175,14 +188,6 @@ class PayPalPaymentErrorView(View):
         )
 
 
-# Paystack
-PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY
-headers = {
-    "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
-    "Content-Type": "application/json",
-}
-
-
 def initialize_transaction(email, amount):
     url = "https://api.paystack.co/transaction/initialize"
     data = {
@@ -203,7 +208,6 @@ class InitializePaystackPaymentView(APIView):
             amount = order.total_amount
             email = user.email
 
-            # Initialize transaction with Paystack
             response = initialize_transaction(email, amount)
 
             if response["status"]:

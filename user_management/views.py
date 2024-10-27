@@ -87,14 +87,17 @@ class GoogleAuthAPIView(APIView):
             "client_id": GOOGLE_OAUTH_CLIENT_ID,
             "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
             # "redirect_uri": settings.LOGIN_REDIRECT_URL,
-            "redirect_uri":"http://localhost:8080/accounts/google/login/callback/",
+            "redirect_uri":"http://localhost:8080/accounts/google/login/",
             "grant_type": "authorization_code",
         }
+
         token_response = requests.post(token_url, data=data)
         token_json = token_response.json()
-        logging.info("token_json",token_json)
         access_token = token_json.get("access_token")
-        logging.info("access_token",access_token)
+        # logging.info(f"{data}")
+        # logging.info(f"Redirect URI being sent: {settings.LOGIN_REDIRECT_URL}")
+        # logging.info(f"token_json: {token_json}")
+        # logging.info(f"access_token: {access_token}")
         if not access_token:
             return Response(
                 {"error": "Failed to retrieve token"},
