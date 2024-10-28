@@ -9,10 +9,8 @@ from .models import (
     StockEntry,
     Product,
     ProductImage,
-    ProductVariant,
     Category,
     ProductReview,
-    VariantImage,
 )
 from cart_management.models import Wishlist
 
@@ -23,19 +21,6 @@ class ProductReviewSerializer(ModelSerializer):
         fields = "__all__"
         read_only_fields = ("product", "user", "created_at", "updated_at")
 
-
-class VariantImageSerializer(ModelSerializer):
-    class Meta:
-        model = VariantImage
-        fields = "__all__"
-
-
-class ProductVariantSerializer(ModelSerializer):
-    product_variant_images = VariantImageSerializer(many=True,read_only=True)
-
-    class Meta:
-        model = ProductVariant
-        fields = "__all__"
 
 
 class ProductImageSerializer(ModelSerializer):

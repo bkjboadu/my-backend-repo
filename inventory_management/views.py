@@ -13,22 +13,18 @@ from .models import (
     Category,
     Supplier,
     Product,
-    ProductVariant,
     ProductImage,
     StockEntry,
     ProductReview,
-    VariantImage
 )
 from .serializers import (
     StoreSerializer,
     ProductSerializer,
-    ProductVariantSerializer,
     StockEntrySerializer,
     SupplierSerializer,
     ProductImageSerializer,
     CategorySerializer,
     ProductReviewSerializer,
-    VariantImageSerializer,
 )
 from .filters import ProductFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -163,36 +159,6 @@ class ProductDetailView(RetrieveUpdateDestroyAPIView):
         )
 
 
-# Product Variant Views
-class ProductVariantListCreateView(ListCreateAPIView):
-    queryset = ProductVariant.objects.all()
-    serializer_class = ProductVariantSerializer
-
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAdminUser()]
-        return []
-
-
-class ProductVariantDetailView(RetrieveUpdateDestroyAPIView):
-    queryset = ProductVariant.objects.all()
-    serializer_class = ProductVariantSerializer
-
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAdminUser()]
-        return []
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(
-            {
-                "detail": f"Product Variant'{instance.name}' has been deleted successfully."
-            },
-            status=status.HTTP_200_OK,
-        )
-
 
 class ProductImageListCreateView(ListCreateAPIView):
     queryset = ProductImage.objects.all()
@@ -223,14 +189,6 @@ class ProductImageDetailView(RetrieveUpdateDestroyAPIView):
             status=status.HTTP_200_OK,
         )
 
-class VariantImageListCreateView(ListCreateAPIView):
-    queryset = VariantImage.objects.all()
-    serializer_class = VariantImageSerializer
-
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAdminUser]
-        return []
 
 # Stock Entry Views
 class StockEntryListCreateView(ListCreateAPIView):

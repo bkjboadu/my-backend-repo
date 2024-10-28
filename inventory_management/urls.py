@@ -8,8 +8,6 @@ from .views import (
     SupplierDetailView,
     ProductListCreateView,
     ProductDetailView,
-    ProductVariantListCreateView,
-    ProductVariantDetailView,
     ProductImageListCreateView,
     ProductImageDetailView,
     StockEntryListCreateView,
@@ -22,6 +20,7 @@ urlpatterns = [
     # Store URLs
     path("stores/", StoreListCreateView.as_view(), name="store-list-create"),
     path("stores/<int:pk>/", StoreDetailView.as_view(), name="store-detail"),
+
     # Category URLs
     path(
         "stores/<int:store_id>/categories/",
@@ -29,23 +28,15 @@ urlpatterns = [
         name="category-list-create",
     ),
     path("categories/<int:pk>/", CategoryDetailView.as_view(), name="category-detail"),
+
     # Supplier URLs
     path("suppliers/", SupplierListCreateView.as_view(), name="supplier-list-create"),
     path("suppliers/<int:pk>/", SupplierDetailView.as_view(), name="supplier-detail"),
+
     # Product URLs
     path("products/", ProductListCreateView.as_view(), name="product-list-create"),
     path("products/<int:pk>/", ProductDetailView.as_view(), name="product-detail"),
-    # Product Variant URLs
-    path(
-        "product-variants/",
-        ProductVariantListCreateView.as_view(),
-        name="product-variant-list-create",
-    ),
-    path(
-        "product-variants/<int:pk>/",
-        ProductVariantDetailView.as_view(),
-        name="product-variant-detail",
-    ),
+
     # Product Image URLs
     path(
         "product-images/",
