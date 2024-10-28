@@ -34,6 +34,7 @@ from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 import requests
 
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -57,9 +58,6 @@ class GoogleCallbackView(View):
             return JsonResponse({"error": "Missing authorization code"}, status=400)
 
         return JsonResponse({"code": code})
-        # auth_url = reverse('google_auth_api')
-        # redirect_url = f"{auth_url}?code={code}"
-        # return redirect(redirect_url)
 
 
 class GoogleAuthAPIView(APIView):
@@ -80,7 +78,6 @@ class GoogleAuthAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Exchange authorization code for access token
         token_url = "https://oauth2.googleapis.com/token"
         redirect_uri = os.getenv("REDIRECT_URI", "http://localhost:8080/accounts/google/login/")
 
@@ -89,13 +86,14 @@ class GoogleAuthAPIView(APIView):
             "client_id": GOOGLE_OAUTH_CLIENT_ID,
             "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
             "redirect_uri":"http://localhost:8080/accounts/google/login/",
+            # "redirect_uri":settings.LOGIN_REDIRECT_URL,
             "grant_type": "authorization_code",
         }
 
         token_response = requests.post(token_url, data=data)
         token_json = token_response.json()
         access_token = token_json.get("access_token")
-        # logging.info(f"{data}")
+        logging.info(f"{data}")
         # logging.info(f"Redirect URI being sent: {settings.LOGIN_REDIRECT_URL}")
         # logging.info(f"token_json: {token_json}")
         # logging.info(f"access_token: {access_token}")
@@ -122,7 +120,30 @@ class GoogleAuthAPIView(APIView):
         user_info_response = requests.get(user_info_url, headers=headers)
         user_info = user_info_response.json()
 
-        return Response(user_info, status=status.HTTP_200_OK)
+        email = user_info.get("email")
+        user, created = CustomUser.objects.get_or_create(email=email, defaults={
+            'first_name': user_info.get("given_name"),
+            'last_name': user_info.get("family_name")
+        })
+
+        # Generate access and refresh tokens for the user
+        refresh = RefreshToken.for_user(user)
+        jwt_access_token = str(refresh.access_token)
+        jwt_refresh_token = str(refresh)
+
+        # Return user info along with access and refresh tokens
+        return Response(
+            {
+                "user_info": user_info,
+                "access_token": jwt_access_token,
+                "refresh_token": jwt_refresh_token
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+
+        # return Response(user_info, status=status.HTTP_200_OK)
 
 
 class UserSignupView(generics.GenericAPIView):
