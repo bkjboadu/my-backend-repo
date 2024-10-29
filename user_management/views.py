@@ -126,6 +126,8 @@ class GoogleAuthAPIView(APIView):
             'last_name': user_info.get("family_name")
         })
 
+        user_data = UserSerializer(user).data
+
         # Generate access and refresh tokens for the user
         refresh = RefreshToken.for_user(user)
         jwt_access_token = str(refresh.access_token)
@@ -134,7 +136,7 @@ class GoogleAuthAPIView(APIView):
         # Return user info along with access and refresh tokens
         return Response(
             {
-                "user_info": user_info,
+                "user_info": user_data,
                 "access_token": jwt_access_token,
                 "refresh_token": jwt_refresh_token
             },
