@@ -116,7 +116,7 @@ class ProductReview(models.Model):
         unique_together = ("product", "user")
 
     def __str__(self):
-        return f"Review for {self.product.name} by {self.user.username}"
+        return f"Review for {self.product.name} by {self.user.first_name}"
 
 
 # Stock Entry Model
