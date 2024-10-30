@@ -83,11 +83,16 @@ class CategorySerializer(ModelSerializer):
 
 
 class StoreSerializer(ModelSerializer):
-    categories = CategorySerializer(many=True, read_only=True)
+    categories = SerializerMethodField()
 
     class Meta:
         model = Store
         fields = "__all__"
+
+    def get_categories(self,obj):
+        context = self.context
+        categories = obj.categories.all()
+        return CategorySerializer(categories,context=context).data
 
 
 class SupplierSerializer(ModelSerializer):
