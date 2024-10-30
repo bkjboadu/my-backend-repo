@@ -64,7 +64,6 @@ class ProductSerializer(ModelSerializer):
             return False
 
         user = request.user
-        print(user)
         if user.is_authenticated:
             return Wishlist.objects.filter(user=user, product=obj).exists()
         return False

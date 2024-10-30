@@ -43,7 +43,7 @@ class GoogleLoginView(View):
     def get(self, request, *args, **kwargs):
 
         client_id = GOOGLE_OAUTH_CLIENT_ID
-        redirect_uri = settings.LOGIN_REDIRECT_URL
+        redirect_uri = settings.LOGIN_REDIRECT_URI
         google_login_url = (
             f"https://accounts.google.com/o/oauth2/auth?"
             f"response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope=openid%20email%20profile"
@@ -83,12 +83,9 @@ class GoogleAuthAPIView(APIView):
         elif env == "production":
             redirect_uri = "https://dropshop-frontend-de36abef2b64.herokuapp.com/accounts/google/login/"
         else:
-            redirect_uri = settings.LOGIN_REDIRECT_URL
+            redirect_uri = settings.LOGIN_REDIRECT_URI
 
         token_url = "https://oauth2.googleapis.com/token"
-        redirect_uri = os.getenv(
-            "REDIRECT_URI", "http://localhost:8080/accounts/google/login/"
-        )
 
         data = {
             "code": code,
@@ -102,9 +99,9 @@ class GoogleAuthAPIView(APIView):
         token_json = token_response.json()
         access_token = token_json.get("access_token")
         logging.info(f"{data}")
-        # logging.info(f"Redirect URI being sent: {settings.LOGIN_REDIRECT_URL}")
-        # logging.info(f"token_json: {token_json}")
-        # logging.info(f"access_token: {access_token}")
+        logging.info(f"Redirect URI being sent: {redirect_uri}")
+        logging.info(f"token_json: {token_json}")
+        logging.info(f"access_token: {access_token}")
         if not access_token:
             return Response(
                 {"error": "Failed to retrieve token"},
