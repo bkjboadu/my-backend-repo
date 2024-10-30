@@ -94,7 +94,8 @@ class CategoryDetailView(RetrieveUpdateDestroyAPIView):
 
         # Pass filtered products to serializer context
         serializer = self.get_serializer(
-            category, context={"filtered_products": filtered_products}
+            category,
+            context={"filtered_products": filtered_products, "request": request},
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -157,7 +158,6 @@ class ProductDetailView(RetrieveUpdateDestroyAPIView):
             {"detail": f"Product'{instance.name}' has been deleted successfully."},
             status=status.HTTP_200_OK,
         )
-
 
 
 class ProductImageListCreateView(ListCreateAPIView):

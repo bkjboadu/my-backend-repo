@@ -22,7 +22,6 @@ class ProductReviewSerializer(ModelSerializer):
         read_only_fields = ("product", "user", "created_at", "updated_at")
 
 
-
 class ProductImageSerializer(ModelSerializer):
     class Meta:
         model = ProductImage
@@ -30,41 +29,44 @@ class ProductImageSerializer(ModelSerializer):
 
 
 class ProductSerializer(ModelSerializer):
-    reviews = ProductReviewSerializer(many=True,read_only=True)
-    product_images = ProductImageSerializer(many=True,read_only=True)
+    reviews = ProductReviewSerializer(many=True, read_only=True)
+    product_images = ProductImageSerializer(many=True, read_only=True)
     is_in_wishlist = SerializerMethodField()
 
     class Meta:
         model = Product
         fields = [
-                    "id",
-                    "name",
-                    "description",
-                    "sku",
-                    "price",
-                    "quantity_in_stock",
-                    "created_at",
-                    "updated_at",
-                    "is_active",
-                    "store",
-                    "category",
-                    "supplier",
-                    "is_in_wishlist",
-                    "reviews",
-                    "product_images",
-                ]
+            "id",
+            "name",
+            "description",
+            "sku",
+            "price",
+            "quantity_in_stock",
+            "created_at",
+            "updated_at",
+            "is_active",
+            "store",
+            "category",
+            "supplier",
+            "is_in_wishlist",
+            "reviews",
+            "product_images",
+        ]
 
-    def get_is_in_wishlist(self,obj):
+    def get_is_in_wishlist(self, obj):
         from cart_management.serializers import WishlistSerializer
+
+        request = self.context.get("request")
         if isinstance(self.parent, WishlistSerializer):
             return True
 
-        if not self.context.get('request'):
+        if not request:
             return False
 
-        user = self.context.get('request').user
+        user = request.user
+        print(user)
         if user.is_authenticated:
-            return Wishlist.objects.filter(user=user,product=obj).exists()
+            return Wishlist.objects.filter(user=user, product=obj).exists()
         return False
 
 
@@ -77,7 +79,7 @@ class CategorySerializer(ModelSerializer):
 
     def get_products(self, obj):
         products = self.context.get("filtered_products", obj.products)
-        return ProductSerializer(products, many=True).data
+        return ProductSerializer(products, many=True, context=self.context).data
 
 
 class StoreSerializer(ModelSerializer):

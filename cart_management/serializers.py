@@ -10,6 +10,7 @@ class PromotionCodeSerializer(serializers.ModelSerializer):
         model = PromotionCode
         fields = "__all__"
 
+
 class CartItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.name", read_only=True)
 
@@ -44,4 +45,4 @@ class WishlistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Wishlist
-        exclude = ['id']
+        exclude = ["id"]

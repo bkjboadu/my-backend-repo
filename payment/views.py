@@ -25,6 +25,7 @@ headers = {
     "Content-Type": "application/json",
 }
 
+
 class StripePaymentIntentView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -51,9 +52,9 @@ class StripePaymentConfirmView(APIView):
             stripe_charge_id = payment_intent.id
             stripe_intent_status = payment_intent.status
             amount_received = payment_intent.amount_received / 100
-            print('Stripe_charge_id',stripe_charge_id)
-            print("Stripe_intent_status",stripe_intent_status)
-            print("Stripe_amount",amount_received)
+            print("Stripe_charge_id", stripe_charge_id)
+            print("Stripe_intent_status", stripe_intent_status)
+            print("Stripe_amount", amount_received)
 
             payment = StripePayment.objects.create(
                 order_id=request.data.get("order_id"),
@@ -79,10 +80,8 @@ class PayPalPaymentView(View):
     def get(self, request, order_id):
         order = get_object_or_404(Order, id=order_id)
 
-        if order.payment_status == 'paid':
-            return JsonResponse({
-                "details":"Order already paid for"
-            })
+        if order.payment_status == "paid":
+            return JsonResponse({"details": "Order already paid for"})
 
         payment = Payment(
             {

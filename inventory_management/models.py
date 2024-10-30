@@ -82,19 +82,18 @@ class ProductImage(models.Model):
     alt_text = models.CharField(max_length=255, blank=True, null=True)
     is_main = models.BooleanField(default=False)
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         if self.is_main:
-            ProductImage.objects.filter(product=self.product, is_main=True).update(is_main=False)
+            ProductImage.objects.filter(product=self.product, is_main=True).update(
+                is_main=False
+            )
 
         if not ProductImage.objects.filter(product=self.product).exists():
             self.is_main = True
-        super(ProductImage, self).save(*args,**kwargs)
-
+        super(ProductImage, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"Image for {self.product.name}"
-
-
 
 
 # Product Review Model

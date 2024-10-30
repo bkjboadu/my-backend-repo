@@ -1,4 +1,4 @@
-import base64,logging
+import base64, logging
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -70,23 +70,31 @@ class GoogleAuthAPIView(APIView):
         return self.handle_request(request)
 
     def handle_request(self, request):
-        # Check for authorization code in both query params and request data
         code = request.data.get("code") or request.query_params.get("code")
+        env = request.data.get("env", None) or request.query_params.get("env", None)
         if not code:
             return Response(
                 {"error": "Missing authorization code"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        if env == "development":
+            redirect_uri = "http://localhost:8080/accounts/google/login/"
+        elif env == "production":
+            redirect_uri = "https://dropshop-frontend-de36abef2b64.herokuapp.com/accounts/google/login/"
+        else:
+            redirect_uri = settings.LOGIN_REDIRECT_URL
+
         token_url = "https://oauth2.googleapis.com/token"
-        redirect_uri = os.getenv("REDIRECT_URI", "http://localhost:8080/accounts/google/login/")
+        redirect_uri = os.getenv(
+            "REDIRECT_URI", "http://localhost:8080/accounts/google/login/"
+        )
 
         data = {
             "code": code,
             "client_id": GOOGLE_OAUTH_CLIENT_ID,
             "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
-            "redirect_uri":"http://localhost:8080/accounts/google/login/",
-            # "redirect_uri":settings.LOGIN_REDIRECT_URL,
+            "redirect_uri": redirect_uri,
             "grant_type": "authorization_code",
         }
 
@@ -121,10 +129,13 @@ class GoogleAuthAPIView(APIView):
         user_info = user_info_response.json()
 
         email = user_info.get("email")
-        user, created = CustomUser.objects.get_or_create(email=email, defaults={
-            'first_name': user_info.get("given_name"),
-            'last_name': user_info.get("family_name")
-        })
+        user, created = CustomUser.objects.get_or_create(
+            email=email,
+            defaults={
+                "first_name": user_info.get("given_name"),
+                "last_name": user_info.get("family_name"),
+            },
+        )
 
         user_data = UserSerializer(user).data
 
@@ -138,12 +149,10 @@ class GoogleAuthAPIView(APIView):
             {
                 "user_info": user_data,
                 "access_token": jwt_access_token,
-                "refresh_token": jwt_refresh_token
+                "refresh_token": jwt_refresh_token,
             },
-            status=status.HTTP_200_OK
+            status=status.HTTP_200_OK,
         )
-
-
 
         # return Response(user_info, status=status.HTTP_200_OK)
 
