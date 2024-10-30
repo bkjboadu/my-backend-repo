@@ -55,6 +55,10 @@ class ProductSerializer(ModelSerializer):
                 ]
 
     def get_is_in_wishlist(self,obj):
+        from cart_management.serializers import WishlistSerializer
+        if isinstance(self.parent, WishlistSerializer):
+            return True
+
         if not self.context.get('request'):
             return False
 

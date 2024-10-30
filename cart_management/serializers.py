@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 from .models import Cart, CartItem, PromotionCode, Wishlist
 from inventory_management.models import Product
 from inventory_management.serializers import ProductSerializer
@@ -39,9 +40,8 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class WishlistSerializer(serializers.ModelSerializer):
-    # product_name = serializers.CharField(source="product.name", read_only=True)
-    product = ProductSerializer()
+    product = ProductSerializer(read_only=True)
 
     class Meta:
         model = Wishlist
-        fields = "__all__"
+        exclude = ['id']
