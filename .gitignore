@@ -7,3 +7,5 @@ send_email.py
 /myvenv/
 /backend/config/
 .venv
+/payment/stripe_confirm.py
+/payment/stripe_create_intent.py
