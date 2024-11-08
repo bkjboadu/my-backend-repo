@@ -9,3 +9,4 @@ send_email.py
 .venv
 /payment/stripe_confirm.py
 /payment/stripe_create_intent.py
+trash
