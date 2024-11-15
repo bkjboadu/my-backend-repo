@@ -49,7 +49,7 @@ class StripePaymentIntentView(APIView):
         # calculate the total amout from cart items
         total_amount = 0
         for item in cart:
-            product = get_object_or_404(Product, id=item['product_id'])
+            product = get_object_or_404(Product, id=item['product'])
             quantity = item['quantity']
             if quantity > product.quantity_in_stock:
                 return Response({
@@ -81,6 +81,7 @@ class StripePaymentConfirmView(APIView):
         cart = request.data.get('cart')
         billing_address = request.data.get('billing_address',None)
         shipping_address = request.data.get('shipping_address')
+        print(request.data)
 
         try:
             payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
@@ -101,7 +102,7 @@ class StripePaymentConfirmView(APIView):
 
 
                 for item in cart:
-                    product = get_object_or_404(Product, id=item["product_id"])
+                    product = get_object_or_404(Product, id=item["product"])
                     quantity = item["quantity"]
 
                     product.quantity_in_stock -= quantity
