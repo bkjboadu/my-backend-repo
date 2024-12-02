@@ -10,3 +10,5 @@ send_email.py
 /payment/stripe_confirm.py
 /payment/stripe_create_intent.py
 trash
+dump.rdb
+.ropeproject/

@@ -29,7 +29,6 @@ class ProductImageSerializer(ModelSerializer):
 class ProductSerializer(ModelSerializer):
     reviews = ProductReviewSerializer(many=True, read_only=True)
     product_images = ProductImageSerializer(many=True, read_only=True)
-    is_in_wishlist = SerializerMethodField()
 
     class Meta:
         model = Product
@@ -44,25 +43,24 @@ class ProductSerializer(ModelSerializer):
             "updated_at",
             "is_active",
             "store",
-            "is_in_wishlist",
             "reviews",
             "product_images",
         ]
 
-    def get_is_in_wishlist(self, obj):
-        from cart_management.serializers import WishlistSerializer
+    # def get_is_in_wishlist(self, obj):
+    #     from cart_management.serializers import WishlistSerializer
 
-        request = self.context.get("request")
-        if isinstance(self.parent, WishlistSerializer):
-            return True
+    #     request = self.context.get("request")
+    #     if isinstance(self.parent, WishlistSerializer):
+    #         return True
 
-        if not request:
-            return False
+    #     if not request:
+    #         return False
 
-        user = request.user
-        if user.is_authenticated:
-            return Wishlist.objects.filter(user=user, product=obj).exists()
-        return False
+    #     user = request.user
+    #     if user.is_authenticated:
+    #         return Wishlist.objects.filter(user=user, product=obj).exists()
+    #     return False
 
 
 class StoreSerializer(ModelSerializer):
