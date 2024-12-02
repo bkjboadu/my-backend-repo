@@ -12,3 +12,4 @@ send_email.py
 trash
 dump.rdb
 .ropeproject/
+.DS_Store
