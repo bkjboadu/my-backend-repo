@@ -33,8 +33,6 @@ headers = {
 
 
 class StripePaymentIntentView(APIView):
-    permission_classes = [IsAuthenticated]
-
     @method_decorator(csrf_exempt)
     def post(self,request, *args, **kwargs):
         cart = request.data.get('cart')
@@ -72,12 +70,12 @@ class StripePaymentIntentView(APIView):
 
 
 class StripePaymentConfirmView(APIView):
-    permission_classes = [IsAuthenticated]
-
     @method_decorator(csrf_exempt)
     def post(self, request):
         client_secret = request.data.get('clientSecret')
         payment_intent_id = client_secret.split('_secret_')[0]
+        name = request.data.get('name')
+        email = request.data.get('email')
         cart = request.data.get('cart')
         billing_address = request.data.get('billing_address',None)
         shipping_address = request.data.get('shipping_address')
@@ -88,17 +86,15 @@ class StripePaymentConfirmView(APIView):
             stripe_charge_id = payment_intent.id
             stripe_intent_status = payment_intent.status
             amount_received = payment_intent.amount_received / 100
-            # print("Stripe_charge_id", stripe_charge_id)
-            # print("Stripe_intent_status", stripe_intent_status)
-            # print("Stripe_amount", amount_received)
 
             if stripe_intent_status == "succeeded":
                 order = Order.objects.create(
-                            user=request.user,
-                            shipping_address=shipping_address,
-                            billing_address=billing_address,
-                            total_amount=amount_received,
-                        )
+                    name = name,
+                    email = email,
+                    shipping_address=shipping_address,
+                    billing_address=billing_address,
+                    total_amount=amount_received,
+                )
 
 
                 for item in cart:

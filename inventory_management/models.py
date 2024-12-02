@@ -16,50 +16,17 @@ class Store(models.Model):
         return self.name
 
 
-# Category Model
-class Category(models.Model):
-    store = models.ForeignKey(
-        Store, on_delete=models.CASCADE, related_name="categories"
-    )
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        unique_together = ("store", "name")
-
-    def __str__(self):
-        return self.name
-
-
-# Supplier Model
-class Supplier(models.Model):
-    name = models.CharField(max_length=255)
-    contact_email = models.EmailField(blank=True, null=True)
-    contact_phone = models.CharField(max_length=20, blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name
 
 
 # Product Model
 class Product(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name="products")
     name = models.CharField(max_length=255)
-    category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, null=True, related_name="products"
-    )
+
     description = models.TextField(blank=True, null=True)
     sku = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity_in_stock = models.PositiveIntegerField(default=0)
-    supplier = models.ForeignKey(
-        Supplier,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="products",
-        blank=True,
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -101,9 +68,8 @@ class ProductReview(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="reviews"
     )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reviews"
-    )
+    name = models.CharField(max_length=255,null=False,blank=False)
+    email = models.EmailField(null=True,blank=True)
     rating = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
@@ -112,10 +78,10 @@ class ProductReview(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ("product", "user")
+        unique_together = ("product", "name")
 
     def __str__(self):
-        return f"Review for {self.product.name} by {self.user.first_name}"
+        return f"Review for {self.product.name} by {self.name}"
 
 
 # Stock Entry Model

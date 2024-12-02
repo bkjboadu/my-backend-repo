@@ -31,7 +31,8 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             "id",
-            "user",
+            "name",
+            "email",
             "order_number",
             "shipping_address",
             "billing_address",

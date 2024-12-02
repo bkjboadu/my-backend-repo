@@ -17,18 +17,16 @@ from django.utils import timezone
 
 # Create a New Order
 class CreateOrderView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def post(self, request):
         cart = request.data.get("cart")
-        payment_method = request.data.get("payment-method")
         if not cart:
             return Response(
                 {"detail": "No cart data provided."}, status=status.HTTP_400_BAD_REQUEST
             )
 
         order = Order.objects.create(
-            user=request.user,
+            name = request.data.get('name'),
+            email = request.data.get('email'),
             shipping_address=request.data.get("shipping_address"),
             billing_address=request.data.get("billing_address", None),
         )
@@ -110,7 +108,6 @@ class ProcessReturnView(APIView):
 
 # View, Update, or Cancel an Order
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
@@ -135,7 +132,6 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserOrderListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
 
     def get_queryset(self):
@@ -170,8 +166,6 @@ class UpdateOrderStatusView(APIView):
 
 # Handle Payments
 class PaymentView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def post(self, request, order_id):
         order = get_object_or_404(Order, id=order_id, user=request.user)
 
@@ -199,7 +193,7 @@ class PaymentView(APIView):
 
 # Shipment Details and Tracking (Admin Only)
 class ShipmentView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def post(self, request, order_id):
         order = get_object_or_404(Order, id=order_id)
@@ -233,7 +227,7 @@ class ShipmentView(APIView):
 
 
 class CancelOrderView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser()]
 
     def post(self, request, order_id):
         # Get the specific order for the authenticated user

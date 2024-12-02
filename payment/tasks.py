@@ -22,7 +22,7 @@ def send_order_confirmation_mail(order_id):
     message = "Order confirmed"
 
     message = f"""
-        Hi {order.user.first_name},
+        Hi {order.name},
 
         Thank you for shopping with us! We’re excited to let you know that we’ve received your order and it’s currently being processed. Here are the details of your order:
 
@@ -39,7 +39,7 @@ def send_order_confirmation_mail(order_id):
 
         What’s Next?
 
-        We will notify you once your order is shipped and provide tracking information, so you can follow your order right to your doorstep. In the meantime, if you have any questions, feel free to reach out to our customer service team at {order.user.phone_number}.
+        We will notify you once your order is shipped and provide tracking information, so you can follow your order right to your doorstep. In the meantime, if you have any questions, feel free to reach out to our customer service team at {order.phone_number}.
 
         Thank you for choosing {store_name}. We hope you enjoy your purchase!
 
@@ -57,7 +57,7 @@ def send_order_confirmation_mail(order_id):
 
     data = {
         "sender": {"name": sender["name"], "email": sender["email"]},
-        "to": [{"email": order.user.email, "name": order.user.first_name}],
+        "to": [{"email": order.email, "name": order.name}],
         "subject": subject,
         "htmlContent": message,
     }

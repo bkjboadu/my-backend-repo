@@ -25,9 +25,9 @@ class Order(models.Model):
         ("failed", "Failed"),
     ]
 
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders"
-    )
+    name = models.CharField(max_length=255,null=False,blank=False)
+    email = models.EmailField(null=False,blank=False)
+    phone_number = models.IntegerField(null=True,blank=True)
     order_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     payment_status = models.CharField(

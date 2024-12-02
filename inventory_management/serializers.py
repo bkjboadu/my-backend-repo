@@ -5,11 +5,9 @@ from rest_framework.serializers import (
 )
 from .models import (
     Store,
-    Supplier,
     StockEntry,
     Product,
     ProductImage,
-    Category,
     ProductReview,
 )
 from cart_management.models import Wishlist
@@ -46,8 +44,6 @@ class ProductSerializer(ModelSerializer):
             "updated_at",
             "is_active",
             "store",
-            "category",
-            "supplier",
             "is_in_wishlist",
             "reviews",
             "product_images",
@@ -69,29 +65,9 @@ class ProductSerializer(ModelSerializer):
         return False
 
 
-class CategorySerializer(ModelSerializer):
-    products = SerializerMethodField()
-
-    class Meta:
-        model = Category
-        fields = "__all__"
-
-    def get_products(self, obj):
-        products = self.context.get("filtered_products", obj.products)
-        return ProductSerializer(products, many=True, context=self.context).data
-
-
 class StoreSerializer(ModelSerializer):
-    categories = CategorySerializer(many=True, read_only=True)
-
     class Meta:
         model = Store
-        fields = "__all__"
-
-
-class SupplierSerializer(ModelSerializer):
-    class Meta:
-        model = Supplier
         fields = "__all__"
 
 
