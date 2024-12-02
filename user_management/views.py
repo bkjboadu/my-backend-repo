@@ -1,15 +1,13 @@
-import base64, logging
+import base64, logging, jwt
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
-import logging, jwt, asyncio, os
 from user_management.oauth import GoogleAuthBackend
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from user_management.helpers.permissions import IsAdminOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from user_management.models import CustomUser
 

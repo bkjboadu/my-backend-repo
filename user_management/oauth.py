@@ -1,6 +1,5 @@
 import uuid
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth import get_user_model
 from django.conf import settings
 from google.oauth2 import id_token
 from google.auth.transport import requests

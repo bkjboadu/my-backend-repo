@@ -3,11 +3,6 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import CustomUser
 from user_management.helpers.validator import CustomPasswordValidator
-from django.core.mail import send_mail
-
-from django.utils.crypto import get_random_string
-import jwt
-from django.contrib.auth.hashers import check_password
 from .tasks import send_activation_email
 
 
@@ -50,13 +45,7 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
-            "avatar",
             "phone_number",
-            "shipping_address",
-            "billing_address",
-            "city",
-            "state",
-            "zipcode",
             "country",
         ]
         extra_kwargs = {"email": {"required": False}}
