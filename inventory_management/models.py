@@ -77,8 +77,8 @@ class ProductReview(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # class Meta:
-    #     unique_together = ("product", "name")
+    class Meta:
+        unique_together = ("product", "name")
 
     def __str__(self):
         return f"Review for {self.product.name} by {self.name}"

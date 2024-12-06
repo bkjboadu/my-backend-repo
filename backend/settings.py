@@ -66,7 +66,6 @@ INSTALLED_APPS = [
     "corsheaders",
     "user_management",
     "inventory_management",
-    "cart_management",
     "order_management",
     "payment",
     "allauth",

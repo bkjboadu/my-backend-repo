@@ -10,7 +10,7 @@ from .models import (
     ProductImage,
     ProductReview,
 )
-from cart_management.models import Wishlist
+
 
 
 class ProductReviewSerializer(ModelSerializer):
@@ -46,21 +46,6 @@ class ProductSerializer(ModelSerializer):
             "reviews",
             "product_images",
         ]
-
-    # def get_is_in_wishlist(self, obj):
-    #     from cart_management.serializers import WishlistSerializer
-
-    #     request = self.context.get("request")
-    #     if isinstance(self.parent, WishlistSerializer):
-    #         return True
-
-    #     if not request:
-    #         return False
-
-    #     user = request.user
-    #     if user.is_authenticated:
-    #         return Wishlist.objects.filter(user=user, product=obj).exists()
-    #     return False
 
 
 class StoreSerializer(ModelSerializer):
