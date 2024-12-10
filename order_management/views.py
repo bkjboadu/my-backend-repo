@@ -1,13 +1,12 @@
 from django.views.i18n import JsonResponse
 from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Order, OrderItem, Payment, Shipment
+from .models import Order, OrderItem, Shipment
 from inventory_management.models import Product
 from .serializers import (
     OrderSerializer,
-    OrderItemSerializer,
     PaymentSerializer,
     ShipmentSerializer,
 )
@@ -25,8 +24,8 @@ class CreateOrderView(APIView):
             )
 
         order = Order.objects.create(
-            name = request.data.get('name'),
-            email = request.data.get('email'),
+            name=request.data.get('name'),
+            email=request.data.get('email'),
             shipping_address=request.data.get("shipping_address"),
             billing_address=request.data.get("billing_address", None),
         )
@@ -41,7 +40,7 @@ class CreateOrderView(APIView):
                 return JsonResponse(
                     {
                         "status": "error",
-                        "details": f"Only {product.quantity_in_stock} units of '{product.name}' are available in stock.",
+                        "details": f"'{product.name}' is currently out of stock.",
                     }
                 )
             order_item = OrderItem.objects.create(

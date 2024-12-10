@@ -1,8 +1,4 @@
-from rest_framework.serializers import (
-    ModelSerializer,
-    Serializer,
-    SerializerMethodField,
-)
+from rest_framework.serializers import ModelSerializer
 from .models import (
     Store,
     StockEntry,
@@ -10,7 +6,6 @@ from .models import (
     ProductImage,
     ProductReview,
 )
-
 
 
 class ProductReviewSerializer(ModelSerializer):

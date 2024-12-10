@@ -8,12 +8,13 @@ headers = {
     "Content-Type": "application/json",
 }
 
+
 def initialize_transaction(email, amount):
     url = 'https://api.paystack.co/transaction/initialize'
     data = {
         "email": email,
         "amount": amount * 100,
-        "payment_channel": ["mobile_money"] ,
+        "payment_channel": ["mobile_money"]
     }
     response = requests.post(url, headers=headers, json=data)
     return response.json()

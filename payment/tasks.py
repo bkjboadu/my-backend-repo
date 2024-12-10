@@ -1,9 +1,7 @@
+import requests, os
 from celery import shared_task
 from order_management.models import Order
 from django.db import transaction
-from django.forms.models import model_to_dict
-import requests, os
-from typing import Dict
 
 
 @shared_task
@@ -19,32 +17,98 @@ def send_order_confirmation_mail(order_id):
 
     subject = "Thank You for Your Order with Dropshop"
 
-    message = "Order confirmed"
-
+    # Add styled HTML content
     message = f"""
-        Hi {order.name},
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                }}
+                .container {{
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    border: 1px solid #ddd;
+                    border-radius: 10px;
+                    background-color: #f9f9f9;
+                }}
+                .header {{
+                    text-align: center;
+                    color: #ffffff;
+                    background-color: #007bff;
+                    padding: 10px;
+                    border-radius: 10px 10px 0 0;
+                }}
+                .header h1 {{
+                    margin: 0;
+                    font-size: 24px;
+                }}
+                .content {{
+                    padding: 20px;
+                }}
+                .order-details {{
+                    margin: 20px 0;
+                }}
+                .order-details th, .order-details td {{
+                    text-align: left;
+                    padding: 5px 10px;
+                }}
+                .footer {{
+                    text-align: center;
+                    font-size: 12px;
+                    color: #555;
+                    margin-top: 20px;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Thank You for Your Order</h1>
+                </div>
+                <div class="content">
+                    <p>Hi <b>{order.name}</b>,</p>
+                    <p>Thank you for shopping with us! We’re excited to let you know that we’ve received your order and it’s currently being processed. Here are the details of your order:</p>
 
-        Thank you for shopping with us! We’re excited to let you know that we’ve received your order and it’s currently being processed. Here are the details of your order:
+                    <div class="order-details">
+                        <h2>Order Summary</h2>
+                        <table>
+                            <tr>
+                                <th>Order Number:</th>
+                                <td>{order.order_number}</td>
+                            </tr>
+                            <tr>
+                                <th>Order Date:</th>
+                                <td>{order.created_at.strftime('%Y-%m-%d')}</td>
+                            </tr>
+                            <tr>
+                                <th>Shipping Address:</th>
+                                <td>{order.shipping_address}</td>
+                            </tr>
+                        </table>
+                    </div>
 
-        Order Summary:
-            • Order Number: {order.order_number}
-            • Order Date: {order.created_at}
-            • Shipping Address:
-        {order.shipping_address}
+                    <h3>Items Ordered:</h3>
+                    <ul>
+                        {"".join(f"<li>{item.product.name} - {item.quantity} x ${item.price_at_order}</li>" for item in order.items.all())}
+                    </ul>
 
-        Items Ordered:
-        {order.items.all()}  # Provide a formatted list of items here
+                    <p><strong>Total Amount:</strong> ${order.total_amount:.2f}</p>
 
-        Total Amount: ${order.total_amount}
+                    <h3>What’s Next?</h3>
+                    <p>We will notify you once your order is shipped and provide tracking information, so you can follow your order right to your doorstep. In the meantime, if you have any questions, feel free to reach out to our customer service team at {order.phone_number}.</p>
 
-        What’s Next?
-
-        We will notify you once your order is shipped and provide tracking information, so you can follow your order right to your doorstep. In the meantime, if you have any questions, feel free to reach out to our customer service team at {order.phone_number}.
-
-        Thank you for choosing {store_name}. We hope you enjoy your purchase!
-
-        Warm regards,
-        The {store_name} Team
+                    <p>Thank you for choosing {store_name}. We hope you enjoy your purchase!</p>
+                </div>
+                <div class="footer">
+                    <p>Warm regards,<br>The {store_name} Team</p>
+                </div>
+            </div>
+        </body>
+        </html>
     """
 
     BREVO_API_KEY = os.getenv("BREVO_API_KEY")

@@ -4,11 +4,6 @@ from user_management.views import *
 urlpatterns = [
     path("signup/", UserSignupView.as_view(), name="signup"),
     path("login/", UserLoginView.as_view(), name="login"),
-    # path("google/login/", GoogleLoginView.as_view(), name="google_login"),
-    # path(
-    #     "google/login/callback/", GoogleCallbackView.as_view(), name="google_callback"
-    # ),
-    # path("google-auth/", GoogleAuthAPIView.as_view(), name="google_auth_api"),
     path("users/", UserLists.as_view(), name="lists"),
     path("activate/<str:token>/", Activate.as_view(), name="activate"),
     path("password_reset/", PasswordResetView.as_view(), name="password_reset"),

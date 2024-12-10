@@ -2,7 +2,6 @@ import base64
 import os
 from typing import Dict
 import requests
-from django.contrib.sites.shortcuts import get_current_site
 import jwt
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict

@@ -1,6 +1,7 @@
 from datetime import timedelta
 from pathlib import Path
-import os, json
+import os
+import json
 from decouple import config
 from dotenv import load_dotenv
 import dj_database_url

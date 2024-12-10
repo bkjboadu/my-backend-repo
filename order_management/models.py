@@ -1,9 +1,9 @@
-from celery.app.utils import DEFAULTS
-from django.db import models
-from django.conf import settings
-from inventory_management.models import Product
-from django.utils import timezone
 import uuid
+
+from django.db import models
+from django.utils import timezone
+
+from inventory_management.models import Product
 
 
 # Order Model
@@ -25,9 +25,9 @@ class Order(models.Model):
         ("failed", "Failed"),
     ]
 
-    name = models.CharField(max_length=255,null=False,blank=False)
-    email = models.EmailField(null=False,blank=False)
-    phone_number = models.IntegerField(null=True,blank=True)
+    name = models.CharField(max_length=255, null=False, blank=False)
+    email = models.EmailField(null=False, blank=False)
+    phone_number = models.IntegerField(null=True, blank=True)
     order_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     payment_status = models.CharField(
@@ -44,7 +44,7 @@ class Order(models.Model):
     return_reason = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Order {self.order_number} by {self.user.first_name}"
+        return f"Order {self.order_number} by {self.name}"
 
 
 # OrderItem Model

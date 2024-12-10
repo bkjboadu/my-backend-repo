@@ -1,4 +1,3 @@
-from django.core.files import storage
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -14,8 +13,6 @@ class Store(models.Model):
 
     def __str__(self):
         return self.name
-
-
 
 
 # Product Model
@@ -68,8 +65,8 @@ class ProductReview(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="reviews"
     )
-    name = models.CharField(max_length=255,null=False,blank=False)
-    email = models.EmailField(null=True,blank=True)
+    name = models.CharField(max_length=255, null=False, blank=False)
+    email = models.EmailField(null=True, blank=True)
     rating = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
