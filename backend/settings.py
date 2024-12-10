@@ -165,10 +165,9 @@ ROOT_URLCONF = "backend.urls"
 AUTH_USER_MODEL = "user_management.CustomUser"
 
 CORS_ALLOWED_ORIGINS = [
-    "https://dropshop-frontend-de36abef2b64.herokuapp.com",
+    "https://dropshop-frontend-5923650f679f.herokuapp.com",
     "https://dropshop-backend-1ee9a87b1bda.herokuapp.com",
     "http://localhost:8080",
-    "http://localhost:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
