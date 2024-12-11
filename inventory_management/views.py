@@ -146,7 +146,8 @@ class ProductReviewListCreateView(ListCreateAPIView):
     def perform_create(self, serializer):
         product_id = self.kwargs["product_id"]
         product = get_object_or_404(Product, pk=product_id)
-        serializer.save(user=self.request.user, product=product)
+        print(product)
+        serializer.save(product=product)
 
 
 class ProductReviewDetailView(RetrieveUpdateDestroyAPIView):
