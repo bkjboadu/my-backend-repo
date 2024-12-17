@@ -20,7 +20,7 @@ class AsyncSentimentProcesser:
 
     def __init__(self, max_rows=100, max_processes=10, verbose=False):
         # get db
-        self.DATABASE_URL = "postgresql://pennyloupe:l0ve%23p3nnyst0ckz512@34.125.28.12/pennyloupe"
+        self.DATABASE_URL = os.getenv("DATABASE_URL")
 
         # set other params
         self.max_rows = max_rows
