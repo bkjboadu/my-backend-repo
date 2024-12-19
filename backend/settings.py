@@ -168,6 +168,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://dropshop-frontend-5923650f679f.herokuapp.com",
     "https://dropshop-backend-1ee9a87b1bda.herokuapp.com",
     "http://localhost:8080",
+    "http://dropshop.live",
+    "https://dropshop.live"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
