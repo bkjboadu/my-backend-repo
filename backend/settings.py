@@ -174,6 +174,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = ["https://dropshop-backend-1ee9a87b1bda.herokuapp.com"]
 
 TEMPLATES = [
