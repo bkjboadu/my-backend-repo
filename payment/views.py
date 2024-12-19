@@ -116,6 +116,9 @@ class StripePaymentConfirmView(APIView):
                     amount=amount_received,
                     status=stripe_intent_status,
                 )
+                # print(stripe.api_key)
+                # print(settings.STRIPE_SECRET_KEY)
+                # print(settings.STRIPE_PUBLISHABLE_KEY)
 
                 send_order_confirmation_mail(order.id)
 
