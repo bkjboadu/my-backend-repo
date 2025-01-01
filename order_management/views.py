@@ -70,7 +70,7 @@ class RequestReturnView(APIView):
             )
 
         order.return_requested = True
-        order.return_reasone = request.data.get("return_reason", "")
+        order.return_reason = request.data.get("return_reason", "")
         order.save()
         return Response(
             {
